@@ -1,0 +1,16 @@
+@import '../../style.css';
+
+.ide-layout {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background-color: #0f1012;
+    overflow: hidden;
+}
+
+.ide-content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
