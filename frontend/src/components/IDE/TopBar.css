@@ -1,0 +1,202 @@
+@import '../../style.css';
+
+.ide-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: linear-gradient(to bottom, #16171a, #0f1012);
+    border-bottom: 1px solid var(--border-color);
+    height: 64px;
+}
+
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 200px;
+}
+
+.app-breadcrumb {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text-secondary);
+    gap: 8px;
+}
+
+.app-name {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.lock-icon {
+    width: 14px;
+    height: 14px;
+    color: var(--text-secondary);
+}
+
+.top-bar-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0 16px;
+}
+
+.tabs-row {
+    display: flex;
+    align-items: center;
+    background: #0f1012;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 4px;
+    gap: 4px;
+}
+
+.tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+.tab-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.tab-close {
+    width: 12px;
+    height: 12px;
+    opacity: 0.6;
+    margin-left: 4px;
+}
+
+.tab-close:hover {
+    opacity: 1;
+}
+
+.new-tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.new-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 200px;
+    justify-content: flex-end;
+}
+
+.path-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 240px;
+}
+
+.path-input {
+    width: 100%;
+    background: #0f1012;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 8px 16px;
+    padding-right: 36px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.path-input:focus {
+    outline: none;
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+}
+
+.refresh-btn {
+    position: absolute;
+    right: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.refresh-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+}
+
+.publish-btn {
+    background: #2a2b30;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.publish-btn:hover {
+    background: #33343a;
+    border-color: var(--border-hover);
+}

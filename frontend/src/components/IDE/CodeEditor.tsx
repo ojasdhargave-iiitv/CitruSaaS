@@ -1,0 +1,95 @@
+import React, { useState, useEffect } from 'react';
+import './CodeEditor.css';
+
+const IconAI = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+);
+
+const IconBraces = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+);
+
+const IconAlert = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e06c75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+);
+
+const IconWarning = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d19a66" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+);
+
+const CodeEditor: React.FC = () => {
+    const [code, setCode] = useState(`import React from 'react';
+import { render } from 'react-dom';
+
+const App = () => {
+  return (
+    <div className="container">
+      <h1>Hello World</h1>
+      <p>This is a CitruSaaS IDE environment.</p>
+    </div>
+  );
+};
+
+render(<App />, document.getElementById('root'));`);
+
+    const [lineCount, setLineCount] = useState(1);
+
+    useEffect(() => {
+        const lines = code.split('\n').length;
+        setLineCount(lines);
+    }, [code]);
+
+    return (
+        <div className="code-editor-container">
+            <div className="editor-canvas">
+                <div className="code-wrapper">
+                    <div className="line-numbers">
+                        {Array.from({ length: lineCount }).map((_, i) => (
+                            <div key={i} className="line-number-item">
+                                {i + 1}
+                            </div>
+                        ))}
+                    </div>
+                    <textarea
+                        className="code-input-area"
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
+                        spellCheck={false}
+                    />
+                </div>
+            </div>
+
+            <div className="editor-footer">
+                <div className="footer-item">
+                    <IconAI />
+                    AI
+                </div>
+                <div className="footer-item">
+                    <IconBraces />
+                    JavaScript
+                </div>
+                <div className="footer-item">
+                    <IconAlert />
+                    0
+                </div>
+                <div className="footer-item">
+                    <IconWarning />
+                    0
+                </div>
+                <div className="footer-item">
+                    <span className="status-dot"></span>
+                    Ln {lineCount}, Col 1
+                </div>
+                <div className="footer-item">
+                    Spaces: 2
+                </div>
+                <div className="footer-item">
+                    History
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '4px' }}><path d="M12 2v10l4.5 4.5M22 12A10 10 0 1 1 12 2a10 10 0 0 1 10 10z"></path></svg>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default CodeEditor;
