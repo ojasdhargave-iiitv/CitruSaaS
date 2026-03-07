@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './CodeEditor.css';
+import { ActiveFile } from './IDELayout';
+
+interface CodeEditorProps {
+    activeFile: ActiveFile | null;
+    onSave: (content: string) => void;
+}
 
 const IconAI = () => (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -17,30 +23,34 @@ const IconWarning = () => (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d19a66" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
 );
 
-const CodeEditor: React.FC = () => {
-    const [code, setCode] = useState(`import React from 'react';
-import { render } from 'react-dom';
-
-const App = () => {
-  return (
-    <div className="container">
-      <h1>Hello World</h1>
-      <p>This is a CitruSaaS IDE environment.</p>
-    </div>
-  );
-};
-
-render(<App />, document.getElementById('root'));`);
-
+const CodeEditor: React.FC<CodeEditorProps> = ({ activeFile, onSave }) => {
+    const [code, setCode] = useState("");
     const [lineCount, setLineCount] = useState(1);
+
+    useEffect(() => {
+        if (activeFile) {
+            setCode(activeFile.content);
+        } else {
+            setCode("// Select a file to view content");
+        }
+    }, [activeFile]);
 
     useEffect(() => {
         const lines = code.split('\n').length;
         setLineCount(lines);
     }, [code]);
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            if (activeFile) {
+                onSave(code);
+            }
+        }
+    };
+
     return (
-        <div className="code-editor-container">
+        <div className="code-editor-container" onKeyDown={handleKeyDown} tabIndex={0}>
             <div className="editor-canvas">
                 <div className="code-wrapper">
                     <div className="line-numbers">
@@ -55,6 +65,7 @@ render(<App />, document.getElementById('root'));`);
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
                         spellCheck={false}
+                        disabled={!activeFile}
                     />
                 </div>
             </div>
@@ -66,7 +77,7 @@ render(<App />, document.getElementById('root'));`);
                 </div>
                 <div className="footer-item">
                     <IconBraces />
-                    JavaScript
+                    {activeFile ? activeFile.name.split('.').pop()?.toUpperCase() : 'TEXT'}
                 </div>
                 <div className="footer-item">
                     <IconAlert />

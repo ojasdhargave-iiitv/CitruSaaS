@@ -72,7 +72,7 @@ const TopBar: React.FC = () => {
                         Code Editor
                         <span className="tab-close"><IconX /></span>
                     </button>
-                    <button className="new-tab-btn">
+                    <button className="new-tab-btn" title="New Tab" aria-label="New Tab">
                         <IconPlus />
                     </button>
                 </div>
@@ -81,15 +81,15 @@ const TopBar: React.FC = () => {
             {/* Right: Controls */}
             <div className="top-bar-right">
                 <div className="path-input-group">
-                    <input type="text" className="path-input" defaultValue="/" />
-                    <button className="refresh-btn">
+                    <input type="text" className="path-input" defaultValue="/" placeholder="Path" aria-label="Path input" />
+                    <button className="refresh-btn" title="Refresh" aria-label="Refresh">
                         <IconRefresh />
                     </button>
                 </div>
-                <button className="icon-btn">
+                <button className="icon-btn" title="Settings" aria-label="Settings">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                 </button>
-                <button className="publish-btn">Publish</button>
+                <button className="publish-btn" title="Publish" aria-label="Publish">Publish</button>
             </div>
         </div>
     );

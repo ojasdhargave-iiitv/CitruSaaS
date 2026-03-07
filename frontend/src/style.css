@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --bg-dark: #0f1012;
   --bg-sidebar: #16171a;
@@ -38,4 +40,14 @@ button {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
