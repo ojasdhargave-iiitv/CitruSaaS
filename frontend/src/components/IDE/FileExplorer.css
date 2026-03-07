@@ -98,6 +98,7 @@
     cursor: pointer;
     color: var(--text-secondary);
     font-size: 13px;
+    -webkit-user-select: none;
     user-select: none;
     transition: background 0.15s;
 }

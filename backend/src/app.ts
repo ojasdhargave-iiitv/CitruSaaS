@@ -1,6 +1,7 @@
 import express, { type Application } from "express";
 import cors from "cors";
 import generateRoutes from "./routes/generator_route.js";
+import fileRoutes from "./routes/fileRoutes.js";
 
 const app: Application = express();
 
@@ -19,6 +20,10 @@ app.get("/", (req, res) => {
   `);
 });
 
+import userRoutes from "./routes/userRoutes.js";
+
 app.use("/api", generateRoutes);
+app.use("/api", fileRoutes);
+app.use("/api/users", userRoutes);
 
 export default app;
