@@ -1,0 +1,47 @@
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { userExists, createUser, findUserByEmail } from '../models/User.js';
+const JWT_SECRET = process.env.jwt_secret;
+export const userSignupPost = async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+        if (!username || !email || !password) {
+            return res.status(400).json({ error: 'Username, email and password are required.' });
+        }
+        const taken = await userExists(username, email);
+        if (taken) {
+            return res.status(400).json({ error: 'Username or email already exists.' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 6);
+        const user = await createUser(username, email, hashedPassword);
+        const token = jwt.sign({ userId: user.id, username: user.username, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+        res.status(201).json({ message: 'User signup successful', token });
+    }
+    catch (err) {
+        console.error('[Signup Error]', err);
+        res.status(500).json({ error: 'Signup failed. Please try again.' });
+    }
+};
+export const userLoginPost = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required.' });
+        }
+        const user = await findUserByEmail(email);
+        if (!user) {
+            return res.status(400).json({ error: 'No account found with that email.' });
+        }
+        const isMatched = await bcrypt.compare(password, user.password);
+        if (!isMatched) {
+            return res.status(401).json({ error: 'Incorrect password.' });
+        }
+        const token = jwt.sign({ userId: user.id, username: user.username, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+        res.status(200).json({ message: 'User login successful', token });
+    }
+    catch (err) {
+        console.error('[Login Error]', err);
+        res.status(500).json({ error: 'Login failed. Please try again.' });
+    }
+};
+//# sourceMappingURL=userController.js.map

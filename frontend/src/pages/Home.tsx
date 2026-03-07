@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar/Sidebar';
 import CreateProjectModal from '../components/CreateProjectModal/CreateProjectModal';
+import AuthModal from '../components/AuthModal/AuthModal';
 import { frameworks, Framework } from '../types/config';
 import './Home.css';
 
@@ -74,6 +76,14 @@ const getIcon = (id: string) => {
 const Home: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedFramework, setSelectedFramework] = useState<Framework | null>(null);
+    const [isAuthOpen, setIsAuthOpen] = useState(false);
+    const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+    const navigate = useNavigate();
+
+    const openAuth = (mode: 'login' | 'signup') => {
+        setAuthMode(mode);
+        setIsAuthOpen(true);
+    };
 
     const handleFrameworkClick = (framework: Framework) => {
         setSelectedFramework(framework);
@@ -86,14 +96,36 @@ const Home: React.FC = () => {
         setTimeout(() => setSelectedFramework(null), 300);
     };
 
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    useEffect(() => {
+        setIsLoggedIn(!!localStorage.getItem('token'));
+    }, [isAuthOpen]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        window.location.reload();
+    };
+
     return (
         <div className="home-container">
             <Sidebar />
 
             <main className="main-content">
                 <div className="top-bar">
-                    <button className="btn btn-ghost">Sign In</button>
-                    <button className="btn btn-ghost">Get Started</button>
+                    {isLoggedIn ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
+                            </div>
+                            <button className="btn btn-ghost" onClick={handleLogout}>Logout</button>
+                        </div>
+                    ) : (
+                        <>
+                            <button className="btn btn-ghost" onClick={() => openAuth('login')}>Sign In</button>
+                            <button className="btn btn-ghost" onClick={() => openAuth('signup')}>Get Started</button>
+                        </>
+                    )}
                 </div>
 
                 <div className="hero-section">
@@ -171,6 +203,12 @@ const Home: React.FC = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 framework={selectedFramework}
+            />
+
+            <AuthModal
+                isOpen={isAuthOpen}
+                onClose={() => setIsAuthOpen(false)}
+                initialMode={authMode}
             />
         </div>
     );
