@@ -39,6 +39,7 @@
     "skipLibCheck": true
   },
   "exclude": [
+    "dist",
     "prisma.config.ts",
     "src/generated/prisma"
   ]
