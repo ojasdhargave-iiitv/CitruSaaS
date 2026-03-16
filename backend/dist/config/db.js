@@ -5,7 +5,7 @@ const { Pool } = pg;
 // All schema/table SQL lives in the model files (src/models/)
 const pool = new Pool({
     // Note: using Supabase connection string (IPv4 pooler URL recommended)
-    connectionString: process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL,
+    connectionString: process.env.SUPABASE_DATABASE_URL,
     ssl: { rejectUnauthorized: false }, // required for Supabase
 });
 // Log unexpected errors on idle clients
