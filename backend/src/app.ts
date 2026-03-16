@@ -2,6 +2,9 @@ import express, { type Application } from "express";
 import cors from "cors";
 import generateRoutes from "./routes/generator_route.js";
 import fileRoutes from "./routes/fileRoutes.js";
+import dotenv from "dotenv"
+import oauthRoutes from "./oauth.js"
+
 
 const app: Application = express();
 
@@ -25,5 +28,11 @@ import userRoutes from "./routes/userRoutes.js";
 app.use("/api", generateRoutes);
 app.use("/api", fileRoutes);
 app.use("/api/users", userRoutes);
+
+
+
+dotenv.config()
+
+app.use("/auth", oauthRoutes)
 
 export default app;
