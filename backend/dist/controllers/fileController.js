@@ -7,7 +7,7 @@ import path from "path";
 // But wait, if we run from backend root:
 // path.resolve() is backend/
 // We want to access the parent of backend.
-const PROJECT_ROOT = path.resolve(process.cwd(), "..");
+const PROJECT_ROOT = path.resolve(process.cwd(), "sandbox");
 export const createFile = async (req, res) => {
     try {
         const { filePath } = req.body;
@@ -95,6 +95,62 @@ export const listFiles = async (req, res) => {
             return a.type === 'directory' ? -1 : 1;
         });
         res.json({ files });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+};
+export const createTemplateFile = async (req, res) => {
+    try {
+        const { moduleId, fileType } = req.body;
+        if (!moduleId || !fileType) {
+            return res.status(400).json({ error: "moduleId and fileType are required" });
+        }
+        let sourceName = '';
+        if (moduleId === 'jwt') {
+            sourceName = fileType === 'ts' ? 'JwtAuth_TS.ts' : 'JwtAuth_JS.js';
+        }
+        else if (moduleId === 'zod') {
+            sourceName = fileType === 'ts' ? 'ZodSetup_TS.ts' : 'ZodSetup_JS.js';
+        }
+        else if (moduleId === 'websocket') {
+            sourceName = fileType === 'ts' ? 'WebSocket_TS.ts' : 'WebSocket_JS.js';
+        }
+        else {
+            return res.status(400).json({ error: `Template for '${moduleId}' not defined yet. Please tell me to update backend/src/controllers/fileController.ts to map this module to its template path.` });
+        }
+        const sourcePath = path.resolve(process.cwd(), "src/templates/base", sourceName);
+        const fullTargetPath = path.resolve(PROJECT_ROOT, "backend", "src", sourceName);
+        const permTargetPath = path.resolve(process.cwd(), "src/templates/initial-structure", "backend", "src", sourceName);
+        if (!fullTargetPath.startsWith(PROJECT_ROOT)) {
+            return res.status(403).json({ error: "Access denied" });
+        }
+        if (await fs.pathExists(fullTargetPath)) {
+            return res.status(400).json({ error: "File already exists" });
+        }
+        await fs.copy(sourcePath, fullTargetPath);
+        // Always place the template in the initial-structure backend/src as requested
+        await fs.ensureDir(path.dirname(permTargetPath));
+        await fs.copy(sourcePath, permTargetPath);
+        res.json({ message: "Template created successfully", path: `backend/src/${sourceName}` });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+};
+export const initWorkspace = async (req, res) => {
+    try {
+        const sourcePath = path.resolve(process.cwd(), "src/templates/initial-structure");
+        if (!await fs.pathExists(sourcePath)) {
+            return res.status(500).json({ error: "Initial structure template missing" });
+        }
+        await fs.emptyDir(PROJECT_ROOT);
+        await fs.copy(sourcePath, PROJECT_ROOT);
+        // Ensure backend/src exists
+        await fs.ensureDir(path.resolve(PROJECT_ROOT, "backend", "src"));
+        res.json({ message: "Workspace initialized successfully" });
     }
     catch (err) {
         console.error(err);

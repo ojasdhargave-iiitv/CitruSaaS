@@ -31,6 +31,87 @@ const IconMore = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
 );
 
+const IconChevronRight = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+);
+
+const IconChevronDown = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+);
+
+const getFileIconClass = (filename: string) => {
+    if (filename.endsWith('.ts') || filename.endsWith('.tsx')) return 'icon-ts';
+    if (filename.endsWith('.js') || filename.endsWith('.jsx')) return 'icon-js';
+    if (filename.endsWith('.json')) return 'icon-json';
+    if (filename.endsWith('.css')) return 'icon-css';
+    if (filename.endsWith('.html')) return 'icon-html';
+    return '';
+};
+
+const TreeNode: React.FC<{
+    file: FileEntry;
+    onFileSelect: (path: string) => void;
+    level: number;
+}> = ({ file, onFileSelect, level }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [children, setChildren] = useState<FileEntry[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const toggleOpen = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (file.type === 'directory') {
+            if (!isOpen && children.length === 0) {
+                setIsLoading(true);
+                try {
+                    const response = await fetch(`http://localhost:5000/api/files/list?dirPath=${encodeURIComponent(file.path)}`);
+                    const data = await response.json();
+                    if (response.ok) {
+                        setChildren(data.files);
+                    }
+                } catch (error) {
+                    console.error("Error fetching files:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+            setIsOpen(!isOpen);
+        } else {
+            onFileSelect(file.path);
+        }
+    };
+
+    return (
+        <div>
+            <div
+                className="tree-item"
+                onClick={toggleOpen}
+                style={{ paddingLeft: `${level * 16}px` }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', width: '16px', justifyContent: 'center', marginRight: '4px' }}>
+                    {file.type === 'directory' ? (isOpen ? <IconChevronDown /> : <IconChevronRight />) : null}
+                </div>
+                <span className={`item-icon ${file.type === 'directory' ? 'folder-icon' : getFileIconClass(file.name)}`}>
+                    {file.type === 'directory' ? <IconFolder /> : <IconFile />}
+                </span>
+                <span style={{ color: file.type === 'directory' ? 'var(--text-secondary)' : 'var(--text-primary)' }}>
+                    {file.name}
+                </span>
+            </div>
+            {isOpen && file.type === 'directory' && (
+                <div>
+                    {isLoading ? (
+                        <div className="tree-item" style={{ paddingLeft: `${(level + 1) * 16 + 20}px`, color: '#666', fontSize: '12px' }}>Loading...</div>
+                    ) : (
+                        children.map(child => (
+                            <TreeNode key={child.path} file={child} onFileSelect={onFileSelect} level={level + 1} />
+                        ))
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
     const [width, setWidth] = useState(260);
     const [isResizing, setIsResizing] = useState(false);
@@ -151,17 +232,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
                     </div>
                 )}
                 {files.map((file) => (
-                    <div
-                        key={file.path}
-                        className="tree-item indent-1"
-                        onClick={() => file.type === 'file' && onFileSelect(file.path)}
-                        style={{ cursor: file.type === 'file' ? 'pointer' : 'default' }}
-                    >
-                        <span className="item-icon">
-                            {file.type === 'directory' ? <IconFolder /> : <IconFile />}
-                        </span>
-                        {file.name}
-                    </div>
+                    <TreeNode key={file.path} file={file} onFileSelect={onFileSelect} level={0} />
                 ))}
             </div>
         </div>

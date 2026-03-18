@@ -66,6 +66,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ activeFile, onSave }) => {
                         onChange={(e) => setCode(e.target.value)}
                         spellCheck={false}
                         disabled={!activeFile}
+                        style={{ height: `${lineCount * 1.6}em`, minHeight: '100%' }}
                     />
                 </div>
             </div>

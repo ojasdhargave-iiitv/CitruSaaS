@@ -15,6 +15,8 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
     const [selectedModules, setSelectedModules] = useState<string[]>([]);
     const [modules, setModules] = useState<Module[]>([]);
     const [privacy, setPrivacy] = useState<'public' | 'private'>('public');
+    const [pendingModule, setPendingModule] = useState<Module | null>(null);
+    const [selectedModuleTypes, setSelectedModuleTypes] = useState<Record<string, 'js' | 'ts'>>({});
 
     const navigate = useNavigate();
 
@@ -26,16 +28,84 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
         }
     }, [framework]);
 
-    const toggleModule = (moduleId: string) => {
-        setSelectedModules(prev =>
-            prev.includes(moduleId)
-                ? prev.filter(id => id !== moduleId)
-                : [...prev, moduleId]
-        );
+    const toggleModule = (module: Module) => {
+        const moduleId = module.id;
+        setSelectedModules(prev => {
+            if (prev.includes(moduleId)) {
+                setSelectedModuleTypes(types => {
+                    const newTypes = { ...types };
+                    delete newTypes[moduleId];
+                    return newTypes;
+                });
+                return prev.filter(id => id !== moduleId);
+            } else {
+                if (module.requiresFileType) {
+                    setPendingModule(module);
+                    return prev;
+                }
+                return [...prev, moduleId];
+            }
+        });
     };
 
-    const handleCreate = () => {
-        // In a real app, this would send data to backend first
+    const handleFileTypeSelect = (type: 'js' | 'ts') => {
+        if (pendingModule) {
+            setSelectedModuleTypes(prev => ({ ...prev, [pendingModule.id]: type }));
+            setSelectedModules(prev => [...prev, pendingModule.id]);
+            setPendingModule(null);
+        }
+    };
+
+    const handleCreate = async () => {
+        // Create the project in the DB
+        try {
+            const res = await fetch('http://localhost:5000/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: projectName,
+                    description,
+                    framework: framework?.name,
+                    privacy
+                })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem('currentProjectId', data.id);
+                // Dispatch custom event so the current window updates immediately
+                window.dispatchEvent(new Event('projectChange'));
+            }
+        } catch (err) {
+            console.error("Failed to create project in DB", err);
+        }
+
+        // Initialize the virtual workspace folders
+        try {
+            await fetch('http://localhost:5000/api/files/init', { method: 'POST' });
+        } catch (err) {
+            console.error("Failed to init workspace", err);
+        }
+
+        // Request backend to copy template files to correct location
+        for (const moduleId of selectedModules) {
+            const moduleDef = modules.find(m => m.id === moduleId);
+            if (moduleDef?.requiresFileType) {
+                const ftype = selectedModuleTypes[moduleId];
+                try {
+                    await fetch('http://localhost:5000/api/files/template', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            moduleId, 
+                            fileType: ftype 
+                        })
+                    });
+                } catch (err) {
+                    console.error("Failed to copy template", err);
+                }
+            }
+        }
+        
         onClose();
         navigate('/builder');
     };
@@ -89,7 +159,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
                                     <div
                                         key={module.id}
                                         className={`module-card ${selectedModules.includes(module.id) ? 'selected' : ''}`}
-                                        onClick={() => toggleModule(module.id)}
+                                        onClick={() => toggleModule(module)}
                                     >
                                         <div className="checkbox">
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
@@ -157,6 +227,17 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
                         </button>
                     </div>
                 </div>
+                {pendingModule && (
+                    <div className="filetype-popup-overlay" onClick={() => setPendingModule(null)}>
+                        <div className="filetype-popup" onClick={e => e.stopPropagation()}>
+                            <h3>Select File Type for {pendingModule.name}</h3>
+                            <div className="filetype-options">
+                                <button className="filetype-btn js-btn" onClick={() => handleFileTypeSelect('js')}>JavaScript (.js)</button>
+                                <button className="filetype-btn ts-btn" onClick={() => handleFileTypeSelect('ts')}>TypeScript (.ts)</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

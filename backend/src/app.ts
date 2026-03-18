@@ -8,7 +8,11 @@ import oauthRoutes from "./oauth.js"
 
 const app: Application = express();
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['*']
+}));
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -24,10 +28,13 @@ app.get("/", (req, res) => {
 });
 
 import userRoutes from "./routes/userRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js"; // Added projectRoutes
 
 app.use("/api", generateRoutes);
 app.use("/api", fileRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api", projectRoutes); // Added projectRoutes
+
 
 
 
