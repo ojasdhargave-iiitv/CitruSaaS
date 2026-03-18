@@ -4,6 +4,7 @@ export interface Module {
   id: string;
   name: string;
   selected?: boolean;
+  requiresFileType?: boolean;
 }
 
 export interface Framework {
@@ -35,14 +36,14 @@ export const frameworks: Framework[] = [
     description: 'Node.js is an open-source, cross-platform, back-end JavaScript runtime environment.',
     installs: '+ 6.3M',
     modules: [
-      { id: 'oauth', name: 'OAuth Setup' },
-      { id: 'jwt', name: 'JWT Setup' },
-      { id: 'sessions', name: 'Sessions Setup' },
-      { id: 'websocket', name: 'WebSocket Setup' },
-      { id: 'stripe', name: 'Stripe Payments Gateway Setup' },
-      { id: 'mongodb', name: 'MongoDB Setup' },
-      { id: 'mysql', name: 'MySQL Setup' },
-      { id: 'zod', name: 'ZOD Setup' },
+      { id: 'oauth', name: 'OAuth Setup', requiresFileType: true },
+      { id: 'jwt', name: 'JWT Setup', requiresFileType: true },
+      { id: 'sessions', name: 'Sessions Setup', requiresFileType: true },
+      { id: 'websocket', name: 'WebSocket Setup', requiresFileType: true },
+      { id: 'stripe', name: 'Stripe Payments Gateway Setup', requiresFileType: true },
+      { id: 'mongodb', name: 'MongoDB Setup', requiresFileType: true },
+      { id: 'mysql', name: 'MySQL Setup', requiresFileType: true },
+      { id: 'zod', name: 'ZOD Setup', requiresFileType: true },
     ]
   },
   {

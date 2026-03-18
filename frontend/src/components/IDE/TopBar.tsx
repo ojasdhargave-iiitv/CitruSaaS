@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './TopBar.css';
 
 const IconLogo = () => (
@@ -42,6 +42,32 @@ const IconBug = () => (
 ); // Using similar icon for settings/debug as placeholder
 
 const TopBar: React.FC = () => {
+    const [projectName, setProjectName] = useState("User's App");
+
+    useEffect(() => {
+        const fetchProjectInfo = async () => {
+            const currentProjectId = localStorage.getItem('currentProjectId');
+            if (currentProjectId) {
+                try {
+                    const res = await fetch(`http://localhost:5000/api/projects/${currentProjectId}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.name) setProjectName(data.name);
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch project info", err);
+                }
+            }
+        };
+
+        fetchProjectInfo();
+
+        const handleProjectChange = () => fetchProjectInfo();
+        window.addEventListener('projectChange', handleProjectChange);
+
+        return () => window.removeEventListener('projectChange', handleProjectChange);
+    }, []);
+
     return (
         <div className="ide-top-bar">
             {/* Left: Breadcrumbs */}
@@ -49,7 +75,7 @@ const TopBar: React.FC = () => {
                 <IconLogo />
                 <div className="app-breadcrumb">
                     <span>/</span>
-                    <span className="app-name">User's App</span>
+                    <span className="app-name">{projectName}</span>
                     <IconLock />
                 </div>
             </div>
