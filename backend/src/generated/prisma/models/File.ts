@@ -29,6 +29,7 @@ export type FileMinAggregateOutputType = {
   name: string | null
   path: string | null
   type: $Enums.FileType | null
+  content: string | null
   projectId: string | null
   parentId: string | null
   createdAt: Date | null
@@ -39,6 +40,7 @@ export type FileMaxAggregateOutputType = {
   name: string | null
   path: string | null
   type: $Enums.FileType | null
+  content: string | null
   projectId: string | null
   parentId: string | null
   createdAt: Date | null
@@ -49,6 +51,7 @@ export type FileCountAggregateOutputType = {
   name: number
   path: number
   type: number
+  content: number
   projectId: number
   parentId: number
   createdAt: number
@@ -61,6 +64,7 @@ export type FileMinAggregateInputType = {
   name?: true
   path?: true
   type?: true
+  content?: true
   projectId?: true
   parentId?: true
   createdAt?: true
@@ -71,6 +75,7 @@ export type FileMaxAggregateInputType = {
   name?: true
   path?: true
   type?: true
+  content?: true
   projectId?: true
   parentId?: true
   createdAt?: true
@@ -81,6 +86,7 @@ export type FileCountAggregateInputType = {
   name?: true
   path?: true
   type?: true
+  content?: true
   projectId?: true
   parentId?: true
   createdAt?: true
@@ -164,6 +170,7 @@ export type FileGroupByOutputType = {
   name: string
   path: string
   type: $Enums.FileType
+  content: string
   projectId: string
   parentId: string | null
   createdAt: Date
@@ -195,9 +202,11 @@ export type FileWhereInput = {
   name?: Prisma.StringFilter<"File"> | string
   path?: Prisma.StringFilter<"File"> | string
   type?: Prisma.EnumFileTypeFilter<"File"> | $Enums.FileType
-  projectId?: Prisma.StringFilter<"File"> | string
+  content?: Prisma.StringFilter<"File"> | string
+  projectId?: Prisma.UuidFilter<"File"> | string
   parentId?: Prisma.StringNullableFilter<"File"> | string | null
   createdAt?: Prisma.DateTimeFilter<"File"> | Date | string
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
 }
 
 export type FileOrderByWithRelationInput = {
@@ -205,9 +214,11 @@ export type FileOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   path?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  content?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   parentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  project?: Prisma.ProjectOrderByWithRelationInput
 }
 
 export type FileWhereUniqueInput = Prisma.AtLeast<{
@@ -218,9 +229,11 @@ export type FileWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"File"> | string
   path?: Prisma.StringFilter<"File"> | string
   type?: Prisma.EnumFileTypeFilter<"File"> | $Enums.FileType
-  projectId?: Prisma.StringFilter<"File"> | string
+  content?: Prisma.StringFilter<"File"> | string
+  projectId?: Prisma.UuidFilter<"File"> | string
   parentId?: Prisma.StringNullableFilter<"File"> | string | null
   createdAt?: Prisma.DateTimeFilter<"File"> | Date | string
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
 }, "id">
 
 export type FileOrderByWithAggregationInput = {
@@ -228,6 +241,7 @@ export type FileOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   path?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  content?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   parentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -244,7 +258,8 @@ export type FileScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"File"> | string
   path?: Prisma.StringWithAggregatesFilter<"File"> | string
   type?: Prisma.EnumFileTypeWithAggregatesFilter<"File"> | $Enums.FileType
-  projectId?: Prisma.StringWithAggregatesFilter<"File"> | string
+  content?: Prisma.StringWithAggregatesFilter<"File"> | string
+  projectId?: Prisma.UuidWithAggregatesFilter<"File"> | string
   parentId?: Prisma.StringNullableWithAggregatesFilter<"File"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"File"> | Date | string
 }
@@ -254,9 +269,10 @@ export type FileCreateInput = {
   name: string
   path: string
   type: $Enums.FileType
-  projectId: string
+  content?: string
   parentId?: string | null
   createdAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutFilesInput
 }
 
 export type FileUncheckedCreateInput = {
@@ -264,6 +280,7 @@ export type FileUncheckedCreateInput = {
   name: string
   path: string
   type: $Enums.FileType
+  content?: string
   projectId: string
   parentId?: string | null
   createdAt?: Date | string
@@ -274,9 +291,10 @@ export type FileUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutFilesNestedInput
 }
 
 export type FileUncheckedUpdateInput = {
@@ -284,6 +302,7 @@ export type FileUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -294,6 +313,7 @@ export type FileCreateManyInput = {
   name: string
   path: string
   type: $Enums.FileType
+  content?: string
   projectId: string
   parentId?: string | null
   createdAt?: Date | string
@@ -304,7 +324,7 @@ export type FileUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -314,9 +334,20 @@ export type FileUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
+  content?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FileListRelationFilter = {
+  every?: Prisma.FileWhereInput
+  some?: Prisma.FileWhereInput
+  none?: Prisma.FileWhereInput
+}
+
+export type FileOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type FileCountOrderByAggregateInput = {
@@ -324,6 +355,7 @@ export type FileCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   path?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  content?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   parentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -334,6 +366,7 @@ export type FileMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   path?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  content?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   parentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -344,17 +377,156 @@ export type FileMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   path?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  content?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   parentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type FileCreateNestedManyWithoutProjectInput = {
+  create?: Prisma.XOR<Prisma.FileCreateWithoutProjectInput, Prisma.FileUncheckedCreateWithoutProjectInput> | Prisma.FileCreateWithoutProjectInput[] | Prisma.FileUncheckedCreateWithoutProjectInput[]
+  connectOrCreate?: Prisma.FileCreateOrConnectWithoutProjectInput | Prisma.FileCreateOrConnectWithoutProjectInput[]
+  createMany?: Prisma.FileCreateManyProjectInputEnvelope
+  connect?: Prisma.FileWhereUniqueInput | Prisma.FileWhereUniqueInput[]
+}
+
+export type FileUncheckedCreateNestedManyWithoutProjectInput = {
+  create?: Prisma.XOR<Prisma.FileCreateWithoutProjectInput, Prisma.FileUncheckedCreateWithoutProjectInput> | Prisma.FileCreateWithoutProjectInput[] | Prisma.FileUncheckedCreateWithoutProjectInput[]
+  connectOrCreate?: Prisma.FileCreateOrConnectWithoutProjectInput | Prisma.FileCreateOrConnectWithoutProjectInput[]
+  createMany?: Prisma.FileCreateManyProjectInputEnvelope
+  connect?: Prisma.FileWhereUniqueInput | Prisma.FileWhereUniqueInput[]
+}
+
+export type FileUpdateManyWithoutProjectNestedInput = {
+  create?: Prisma.XOR<Prisma.FileCreateWithoutProjectInput, Prisma.FileUncheckedCreateWithoutProjectInput> | Prisma.FileCreateWithoutProjectInput[] | Prisma.FileUncheckedCreateWithoutProjectInput[]
+  connectOrCreate?: Prisma.FileCreateOrConnectWithoutProjectInput | Prisma.FileCreateOrConnectWithoutProjectInput[]
+  upsert?: Prisma.FileUpsertWithWhereUniqueWithoutProjectInput | Prisma.FileUpsertWithWhereUniqueWithoutProjectInput[]
+  createMany?: Prisma.FileCreateManyProjectInputEnvelope
+  set?: Prisma.FileWhereUniqueInput | Prisma.FileWhereUniqueInput[]
+  disconnect?: Prisma.FileWhereUniqueInput | Prisma.FileWhereUniqueInput[]
+  delete?: Prisma.FileWhereUniqueInput | Prisma.FileWhereUniqueInput[]
+  connect?: Prisma.FileWhereUniqueInput | Prisma.FileWhereUniqueInput[]
+  update?: Prisma.FileUpdateWithWhereUniqueWithoutProjectInput | Prisma.FileUpdateWithWhereUniqueWithoutProjectInput[]
+  updateMany?: Prisma.FileUpdateManyWithWhereWithoutProjectInput | Prisma.FileUpdateManyWithWhereWithoutProjectInput[]
+  deleteMany?: Prisma.FileScalarWhereInput | Prisma.FileScalarWhereInput[]
+}
+
+export type FileUncheckedUpdateManyWithoutProjectNestedInput = {
+  create?: Prisma.XOR<Prisma.FileCreateWithoutProjectInput, Prisma.FileUncheckedCreateWithoutProjectInput> | Prisma.FileCreateWithoutProjectInput[] | Prisma.FileUncheckedCreateWithoutProjectInput[]
+  connectOrCreate?: Prisma.FileCreateOrConnectWithoutProjectInput | Prisma.FileCreateOrConnectWithoutProjectInput[]
+  upsert?: Prisma.FileUpsertWithWhereUniqueWithoutProjectInput | Prisma.FileUpsertWithWhereUniqueWithoutProjectInput[]
+  createMany?: Prisma.FileCreateManyProjectInputEnvelope
+  set?: Prisma.FileWhereUniqueInput | Prisma.FileWhereUniqueInput[]
+  disconnect?: Prisma.FileWhereUniqueInput | Prisma.FileWhereUniqueInput[]
+  delete?: Prisma.FileWhereUniqueInput | Prisma.FileWhereUniqueInput[]
+  connect?: Prisma.FileWhereUniqueInput | Prisma.FileWhereUniqueInput[]
+  update?: Prisma.FileUpdateWithWhereUniqueWithoutProjectInput | Prisma.FileUpdateWithWhereUniqueWithoutProjectInput[]
+  updateMany?: Prisma.FileUpdateManyWithWhereWithoutProjectInput | Prisma.FileUpdateManyWithWhereWithoutProjectInput[]
+  deleteMany?: Prisma.FileScalarWhereInput | Prisma.FileScalarWhereInput[]
 }
 
 export type EnumFileTypeFieldUpdateOperationsInput = {
   set?: $Enums.FileType
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
+export type FileCreateWithoutProjectInput = {
+  id?: string
+  name: string
+  path: string
+  type: $Enums.FileType
+  content?: string
+  parentId?: string | null
+  createdAt?: Date | string
+}
+
+export type FileUncheckedCreateWithoutProjectInput = {
+  id?: string
+  name: string
+  path: string
+  type: $Enums.FileType
+  content?: string
+  parentId?: string | null
+  createdAt?: Date | string
+}
+
+export type FileCreateOrConnectWithoutProjectInput = {
+  where: Prisma.FileWhereUniqueInput
+  create: Prisma.XOR<Prisma.FileCreateWithoutProjectInput, Prisma.FileUncheckedCreateWithoutProjectInput>
+}
+
+export type FileCreateManyProjectInputEnvelope = {
+  data: Prisma.FileCreateManyProjectInput | Prisma.FileCreateManyProjectInput[]
+  skipDuplicates?: boolean
+}
+
+export type FileUpsertWithWhereUniqueWithoutProjectInput = {
+  where: Prisma.FileWhereUniqueInput
+  update: Prisma.XOR<Prisma.FileUpdateWithoutProjectInput, Prisma.FileUncheckedUpdateWithoutProjectInput>
+  create: Prisma.XOR<Prisma.FileCreateWithoutProjectInput, Prisma.FileUncheckedCreateWithoutProjectInput>
+}
+
+export type FileUpdateWithWhereUniqueWithoutProjectInput = {
+  where: Prisma.FileWhereUniqueInput
+  data: Prisma.XOR<Prisma.FileUpdateWithoutProjectInput, Prisma.FileUncheckedUpdateWithoutProjectInput>
+}
+
+export type FileUpdateManyWithWhereWithoutProjectInput = {
+  where: Prisma.FileScalarWhereInput
+  data: Prisma.XOR<Prisma.FileUpdateManyMutationInput, Prisma.FileUncheckedUpdateManyWithoutProjectInput>
+}
+
+export type FileScalarWhereInput = {
+  AND?: Prisma.FileScalarWhereInput | Prisma.FileScalarWhereInput[]
+  OR?: Prisma.FileScalarWhereInput[]
+  NOT?: Prisma.FileScalarWhereInput | Prisma.FileScalarWhereInput[]
+  id?: Prisma.StringFilter<"File"> | string
+  name?: Prisma.StringFilter<"File"> | string
+  path?: Prisma.StringFilter<"File"> | string
+  type?: Prisma.EnumFileTypeFilter<"File"> | $Enums.FileType
+  content?: Prisma.StringFilter<"File"> | string
+  projectId?: Prisma.UuidFilter<"File"> | string
+  parentId?: Prisma.StringNullableFilter<"File"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"File"> | Date | string
+}
+
+export type FileCreateManyProjectInput = {
+  id?: string
+  name: string
+  path: string
+  type: $Enums.FileType
+  content?: string
+  parentId?: string | null
+  createdAt?: Date | string
+}
+
+export type FileUpdateWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FileUncheckedUpdateWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FileUncheckedUpdateManyWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFileTypeFieldUpdateOperationsInput | $Enums.FileType
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -364,9 +536,11 @@ export type FileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   name?: boolean
   path?: boolean
   type?: boolean
+  content?: boolean
   projectId?: boolean
   parentId?: boolean
   createdAt?: boolean
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["file"]>
 
 export type FileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -374,9 +548,11 @@ export type FileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   path?: boolean
   type?: boolean
+  content?: boolean
   projectId?: boolean
   parentId?: boolean
   createdAt?: boolean
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["file"]>
 
 export type FileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -384,9 +560,11 @@ export type FileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   path?: boolean
   type?: boolean
+  content?: boolean
   projectId?: boolean
   parentId?: boolean
   createdAt?: boolean
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["file"]>
 
 export type FileSelectScalar = {
@@ -394,21 +572,34 @@ export type FileSelectScalar = {
   name?: boolean
   path?: boolean
   type?: boolean
+  content?: boolean
   projectId?: boolean
   parentId?: boolean
   createdAt?: boolean
 }
 
-export type FileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "path" | "type" | "projectId" | "parentId" | "createdAt", ExtArgs["result"]["file"]>
+export type FileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "path" | "type" | "content" | "projectId" | "parentId" | "createdAt", ExtArgs["result"]["file"]>
+export type FileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+}
+export type FileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+}
+export type FileIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+}
 
 export type $FilePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "File"
-  objects: {}
+  objects: {
+    project: Prisma.$ProjectPayload<ExtArgs>
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
     path: string
     type: $Enums.FileType
+    content: string
     projectId: string
     parentId: string | null
     createdAt: Date
@@ -806,6 +997,7 @@ readonly fields: FileFieldRefs;
  */
 export interface Prisma__FileClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -839,6 +1031,7 @@ export interface FileFieldRefs {
   readonly name: Prisma.FieldRef<"File", 'String'>
   readonly path: Prisma.FieldRef<"File", 'String'>
   readonly type: Prisma.FieldRef<"File", 'FileType'>
+  readonly content: Prisma.FieldRef<"File", 'String'>
   readonly projectId: Prisma.FieldRef<"File", 'String'>
   readonly parentId: Prisma.FieldRef<"File", 'String'>
   readonly createdAt: Prisma.FieldRef<"File", 'DateTime'>
@@ -859,6 +1052,10 @@ export type FileFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.FileOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileInclude<ExtArgs> | null
+  /**
    * Filter, which File to fetch.
    */
   where: Prisma.FileWhereUniqueInput
@@ -877,6 +1074,10 @@ export type FileFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.FileOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileInclude<ExtArgs> | null
+  /**
    * Filter, which File to fetch.
    */
   where: Prisma.FileWhereUniqueInput
@@ -894,6 +1095,10 @@ export type FileFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the File
    */
   omit?: Prisma.FileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileInclude<ExtArgs> | null
   /**
    * Filter, which File to fetch.
    */
@@ -943,6 +1148,10 @@ export type FileFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.FileOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileInclude<ExtArgs> | null
+  /**
    * Filter, which File to fetch.
    */
   where?: Prisma.FileWhereInput
@@ -991,6 +1200,10 @@ export type FileFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   omit?: Prisma.FileOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileInclude<ExtArgs> | null
+  /**
    * Filter, which Files to fetch.
    */
   where?: Prisma.FileWhereInput
@@ -1034,6 +1247,10 @@ export type FileCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.FileOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileInclude<ExtArgs> | null
+  /**
    * The data needed to create a File.
    */
   data: Prisma.XOR<Prisma.FileCreateInput, Prisma.FileUncheckedCreateInput>
@@ -1067,6 +1284,10 @@ export type FileCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    */
   data: Prisma.FileCreateManyInput | Prisma.FileCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1081,6 +1302,10 @@ export type FileUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the File
    */
   omit?: Prisma.FileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileInclude<ExtArgs> | null
   /**
    * The data needed to update a File.
    */
@@ -1133,6 +1358,10 @@ export type FileUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many Files to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1147,6 +1376,10 @@ export type FileUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the File
    */
   omit?: Prisma.FileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileInclude<ExtArgs> | null
   /**
    * The filter to search for the File to update in case it exists.
    */
@@ -1173,6 +1406,10 @@ export type FileDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the File
    */
   omit?: Prisma.FileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileInclude<ExtArgs> | null
   /**
    * Filter which File to delete.
    */
@@ -1205,4 +1442,8 @@ export type FileDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the File
    */
   omit?: Prisma.FileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileInclude<ExtArgs> | null
 }

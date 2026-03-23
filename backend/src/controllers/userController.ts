@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { userExists, createUser, findUserByEmail } from '../models/User.js';
+import { prisma } from '../config/prisma.js';
 
 const JWT_SECRET = process.env.jwt_secret as string;
 
@@ -12,13 +12,29 @@ export const userSignupPost = async (req: any, res: any) => {
       return res.status(400).json({ error: 'Username, email and password are required.' });
     }
 
-    const taken = await userExists(username, email);
+    const taken = await prisma.user.findFirst({
+        where: {
+            OR: [
+                { username },
+                { email }
+            ]
+        }
+    });
+
     if (taken) {
       return res.status(400).json({ error: 'Username or email already exists.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 6);
-    const user = await createUser(username, email, hashedPassword);
+    
+    // Create use prisma - mapped to "users" table
+    const user = await prisma.user.create({
+        data: {
+            username,
+            email,
+            password: hashedPassword
+        }
+    });
 
     const token = jwt.sign(
       { userId: user.id, username: user.username, email: user.email },
@@ -26,7 +42,7 @@ export const userSignupPost = async (req: any, res: any) => {
       { expiresIn: '30d' }
     );
 
-    res.status(201).json({ message: 'User signup successful', token });
+    res.status(201).json({ message: 'User signup successful', token, user: { id: user.id, username: user.username, email: user.email } });
 
   } catch (err: any) {
     console.error('[Signup Error]', err);
@@ -42,7 +58,10 @@ export const userLoginPost = async (req: any, res: any) => {
       return res.status(400).json({ error: 'Email and password are required.' });
     }
 
-    const user = await findUserByEmail(email);
+    const user = await prisma.user.findUnique({
+        where: { email }
+    });
+
     if (!user) {
       return res.status(400).json({ error: 'No account found with that email.' });
     }
@@ -58,7 +77,7 @@ export const userLoginPost = async (req: any, res: any) => {
       { expiresIn: '30d' }
     );
 
-    res.status(200).json({ message: 'User login successful', token });
+    res.status(200).json({ message: 'User login successful', token, user: { id: user.id, username: user.username, email: user.email } });
 
   } catch (err: any) {
     console.error('[Login Error]', err);

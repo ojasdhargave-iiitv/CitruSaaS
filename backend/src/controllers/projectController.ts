@@ -1,22 +1,25 @@
 import type { Request, Response } from 'express';
-import pool from '../config/db.js';
-import '../models/Project.js'; // Ensure the table is created
+import { prisma } from '../config/prisma.js';
 
 export const createProject = async (req: Request, res: Response) => {
     try {
-        const { name, description, framework, privacy } = req.body;
+        const { name, description, framework, privacy, userId } = req.body;
         if (!name) {
             return res.status(400).json({ error: "Name is required" });
         }
-        
-        const result = await pool.query(
-            `INSERT INTO projects (name, description, framework, privacy)
-             VALUES ($1, $2, $3, $4)
-             RETURNING *`,
-            [name, description || '', framework || '', privacy || 'public']
-        );
-        
-        res.json(result.rows[0]);
+
+        // Create using Prisma which targets the "projects" table (lowercase)
+        const newProject = await prisma.project.create({
+            data: {
+                name,
+                description: description || '',
+                framework: framework || '',
+                privacy: privacy || 'public',
+                userId: (userId && userId.trim() !== "") ? userId : null
+            }
+        });
+
+        res.json(newProject);
     } catch (err: any) {
         console.error(err);
         res.status(500).json({ error: err.message });
@@ -26,11 +29,47 @@ export const createProject = async (req: Request, res: Response) => {
 export const getProject = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const result = await pool.query(`SELECT * FROM projects WHERE id = $1`, [id]);
-        if (result.rows.length === 0) {
+        if (!id) {
+            return res.status(400).json({ error: "Project ID is required" });
+        }
+
+        const project = await prisma.project.findUnique({
+            where: { id: id as string }
+        });
+        
+        if (!project) {
             return res.status(404).json({ error: "Project not found" });
         }
-        res.json(result.rows[0]);
+        res.json(project);
+    } catch (err: any) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const listProjects = async (req: Request, res: Response) => {
+    try {
+        const projects = await prisma.project.findMany({
+            orderBy: { createdAt: 'desc' }
+        });
+        res.json(projects);
+    } catch (err: any) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const deleteProject = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ error: "Project ID is required" });
+        }
+
+        await prisma.project.delete({
+            where: { id: id as string }
+        });
+        res.json({ message: "Project deleted successfully" });
     } catch (err: any) {
         console.error(err);
         res.status(500).json({ error: err.message });

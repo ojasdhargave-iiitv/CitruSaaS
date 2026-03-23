@@ -14,8 +14,9 @@ const IDELayout: React.FC = () => {
     const [activeFile, setActiveFile] = useState<ActiveFile | null>(null);
 
     const handleFileSelect = async (filePath: string) => {
+        const projectId = localStorage.getItem('currentProjectId');
         try {
-            const response = await fetch(`http://localhost:5000/api/files/content?filePath=${encodeURIComponent(filePath)}`);
+            const response = await fetch(`http://localhost:5000/api/files/content?filePath=${encodeURIComponent(filePath)}&projectId=${projectId}`);
             const data = await response.json();
             if (response.ok) {
                 setActiveFile({
@@ -33,15 +34,15 @@ const IDELayout: React.FC = () => {
 
     const handleSave = async (content: string) => {
         if (!activeFile) return;
+        const projectId = localStorage.getItem('currentProjectId');
         try {
             const response = await fetch('http://localhost:5000/api/files/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ filePath: activeFile.path, content })
+                body: JSON.stringify({ filePath: activeFile.path, content, projectId })
             });
             if (response.ok) {
                 console.log("File saved!");
-                // Optionally update local content logic if needed
             } else {
                 console.error("Failed to save file");
             }

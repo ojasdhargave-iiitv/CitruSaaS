@@ -157,3 +157,23 @@
 .icon-html {
     color: #e34c26;
 }
+
+.tree-item.selected {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+.new-file-input {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 13px;
+    padding: 2px 4px;
+    width: calc(100% - 24px);
+    outline: none;
+    border-radius: 4px;
+}
+
+.new-file-input:focus {
+    border-color: var(--accent-blue);
+}
