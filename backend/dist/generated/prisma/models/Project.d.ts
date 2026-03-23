@@ -13,18 +13,27 @@ export type AggregateProject = {
 export type ProjectMinAggregateOutputType = {
     id: string | null;
     name: string | null;
+    description: string | null;
+    framework: string | null;
+    privacy: string | null;
     userId: string | null;
     createdAt: Date | null;
 };
 export type ProjectMaxAggregateOutputType = {
     id: string | null;
     name: string | null;
+    description: string | null;
+    framework: string | null;
+    privacy: string | null;
     userId: string | null;
     createdAt: Date | null;
 };
 export type ProjectCountAggregateOutputType = {
     id: number;
     name: number;
+    description: number;
+    framework: number;
+    privacy: number;
     userId: number;
     createdAt: number;
     _all: number;
@@ -32,18 +41,27 @@ export type ProjectCountAggregateOutputType = {
 export type ProjectMinAggregateInputType = {
     id?: true;
     name?: true;
+    description?: true;
+    framework?: true;
+    privacy?: true;
     userId?: true;
     createdAt?: true;
 };
 export type ProjectMaxAggregateInputType = {
     id?: true;
     name?: true;
+    description?: true;
+    framework?: true;
+    privacy?: true;
     userId?: true;
     createdAt?: true;
 };
 export type ProjectCountAggregateInputType = {
     id?: true;
     name?: true;
+    description?: true;
+    framework?: true;
+    privacy?: true;
     userId?: true;
     createdAt?: true;
     _all?: true;
@@ -113,7 +131,10 @@ export type ProjectGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type ProjectGroupByOutputType = {
     id: string;
     name: string;
-    userId: string;
+    description: string | null;
+    framework: string | null;
+    privacy: string | null;
+    userId: string | null;
     createdAt: Date;
     _count: ProjectCountAggregateOutputType | null;
     _min: ProjectMinAggregateOutputType | null;
@@ -128,16 +149,24 @@ export type ProjectWhereInput = {
     NOT?: Prisma.ProjectWhereInput | Prisma.ProjectWhereInput[];
     id?: Prisma.StringFilter<"Project"> | string;
     name?: Prisma.StringFilter<"Project"> | string;
-    userId?: Prisma.StringFilter<"Project"> | string;
+    description?: Prisma.StringNullableFilter<"Project"> | string | null;
+    framework?: Prisma.StringNullableFilter<"Project"> | string | null;
+    privacy?: Prisma.StringNullableFilter<"Project"> | string | null;
+    userId?: Prisma.StringNullableFilter<"Project"> | string | null;
     createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string;
-    user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
+    user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
+    files?: Prisma.FileListRelationFilter;
 };
 export type ProjectOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
-    userId?: Prisma.SortOrder;
+    description?: Prisma.SortOrderInput | Prisma.SortOrder;
+    framework?: Prisma.SortOrderInput | Prisma.SortOrder;
+    privacy?: Prisma.SortOrderInput | Prisma.SortOrder;
+    userId?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     user?: Prisma.UserOrderByWithRelationInput;
+    files?: Prisma.FileOrderByRelationAggregateInput;
 };
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
     id?: string;
@@ -145,14 +174,21 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
     OR?: Prisma.ProjectWhereInput[];
     NOT?: Prisma.ProjectWhereInput | Prisma.ProjectWhereInput[];
     name?: Prisma.StringFilter<"Project"> | string;
-    userId?: Prisma.StringFilter<"Project"> | string;
+    description?: Prisma.StringNullableFilter<"Project"> | string | null;
+    framework?: Prisma.StringNullableFilter<"Project"> | string | null;
+    privacy?: Prisma.StringNullableFilter<"Project"> | string | null;
+    userId?: Prisma.StringNullableFilter<"Project"> | string | null;
     createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string;
-    user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
+    user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
+    files?: Prisma.FileListRelationFilter;
 }, "id">;
 export type ProjectOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
-    userId?: Prisma.SortOrder;
+    description?: Prisma.SortOrderInput | Prisma.SortOrder;
+    framework?: Prisma.SortOrderInput | Prisma.SortOrder;
+    privacy?: Prisma.SortOrderInput | Prisma.SortOrder;
+    userId?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     _count?: Prisma.ProjectCountOrderByAggregateInput;
     _max?: Prisma.ProjectMaxOrderByAggregateInput;
@@ -164,48 +200,76 @@ export type ProjectScalarWhereWithAggregatesInput = {
     NOT?: Prisma.ProjectScalarWhereWithAggregatesInput | Prisma.ProjectScalarWhereWithAggregatesInput[];
     id?: Prisma.StringWithAggregatesFilter<"Project"> | string;
     name?: Prisma.StringWithAggregatesFilter<"Project"> | string;
-    userId?: Prisma.StringWithAggregatesFilter<"Project"> | string;
+    description?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null;
+    framework?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null;
+    privacy?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null;
+    userId?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string;
 };
 export type ProjectCreateInput = {
     id?: string;
     name: string;
+    description?: string | null;
+    framework?: string | null;
+    privacy?: string | null;
     createdAt?: Date | string;
-    user: Prisma.UserCreateNestedOneWithoutProjectsInput;
+    user?: Prisma.UserCreateNestedOneWithoutProjectsInput;
+    files?: Prisma.FileCreateNestedManyWithoutProjectInput;
 };
 export type ProjectUncheckedCreateInput = {
     id?: string;
     name: string;
-    userId: string;
+    description?: string | null;
+    framework?: string | null;
+    privacy?: string | null;
+    userId?: string | null;
     createdAt?: Date | string;
+    files?: Prisma.FileUncheckedCreateNestedManyWithoutProjectInput;
 };
 export type ProjectUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    framework?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    privacy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput;
+    user?: Prisma.UserUpdateOneWithoutProjectsNestedInput;
+    files?: Prisma.FileUpdateManyWithoutProjectNestedInput;
 };
 export type ProjectUncheckedUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    userId?: Prisma.StringFieldUpdateOperationsInput | string;
+    description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    framework?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    privacy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    files?: Prisma.FileUncheckedUpdateManyWithoutProjectNestedInput;
 };
 export type ProjectCreateManyInput = {
     id?: string;
     name: string;
-    userId: string;
+    description?: string | null;
+    framework?: string | null;
+    privacy?: string | null;
+    userId?: string | null;
     createdAt?: Date | string;
 };
 export type ProjectUpdateManyMutationInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    framework?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    privacy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type ProjectUncheckedUpdateManyInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    userId?: Prisma.StringFieldUpdateOperationsInput | string;
+    description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    framework?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    privacy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type ProjectListRelationFilter = {
@@ -219,20 +283,33 @@ export type ProjectOrderByRelationAggregateInput = {
 export type ProjectCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    description?: Prisma.SortOrder;
+    framework?: Prisma.SortOrder;
+    privacy?: Prisma.SortOrder;
     userId?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
 };
 export type ProjectMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    description?: Prisma.SortOrder;
+    framework?: Prisma.SortOrder;
+    privacy?: Prisma.SortOrder;
     userId?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
 };
 export type ProjectMinOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    description?: Prisma.SortOrder;
+    framework?: Prisma.SortOrder;
+    privacy?: Prisma.SortOrder;
     userId?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
+};
+export type ProjectScalarRelationFilter = {
+    is?: Prisma.ProjectWhereInput;
+    isNot?: Prisma.ProjectWhereInput;
 };
 export type ProjectCreateNestedManyWithoutUserInput = {
     create?: Prisma.XOR<Prisma.ProjectCreateWithoutUserInput, Prisma.ProjectUncheckedCreateWithoutUserInput> | Prisma.ProjectCreateWithoutUserInput[] | Prisma.ProjectUncheckedCreateWithoutUserInput[];
@@ -272,15 +349,38 @@ export type ProjectUncheckedUpdateManyWithoutUserNestedInput = {
     updateMany?: Prisma.ProjectUpdateManyWithWhereWithoutUserInput | Prisma.ProjectUpdateManyWithWhereWithoutUserInput[];
     deleteMany?: Prisma.ProjectScalarWhereInput | Prisma.ProjectScalarWhereInput[];
 };
+export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null;
+};
+export type ProjectCreateNestedOneWithoutFilesInput = {
+    create?: Prisma.XOR<Prisma.ProjectCreateWithoutFilesInput, Prisma.ProjectUncheckedCreateWithoutFilesInput>;
+    connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutFilesInput;
+    connect?: Prisma.ProjectWhereUniqueInput;
+};
+export type ProjectUpdateOneRequiredWithoutFilesNestedInput = {
+    create?: Prisma.XOR<Prisma.ProjectCreateWithoutFilesInput, Prisma.ProjectUncheckedCreateWithoutFilesInput>;
+    connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutFilesInput;
+    upsert?: Prisma.ProjectUpsertWithoutFilesInput;
+    connect?: Prisma.ProjectWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutFilesInput, Prisma.ProjectUpdateWithoutFilesInput>, Prisma.ProjectUncheckedUpdateWithoutFilesInput>;
+};
 export type ProjectCreateWithoutUserInput = {
     id?: string;
     name: string;
+    description?: string | null;
+    framework?: string | null;
+    privacy?: string | null;
     createdAt?: Date | string;
+    files?: Prisma.FileCreateNestedManyWithoutProjectInput;
 };
 export type ProjectUncheckedCreateWithoutUserInput = {
     id?: string;
     name: string;
+    description?: string | null;
+    framework?: string | null;
+    privacy?: string | null;
     createdAt?: Date | string;
+    files?: Prisma.FileUncheckedCreateNestedManyWithoutProjectInput;
 };
 export type ProjectCreateOrConnectWithoutUserInput = {
     where: Prisma.ProjectWhereUniqueInput;
@@ -309,75 +409,185 @@ export type ProjectScalarWhereInput = {
     NOT?: Prisma.ProjectScalarWhereInput | Prisma.ProjectScalarWhereInput[];
     id?: Prisma.StringFilter<"Project"> | string;
     name?: Prisma.StringFilter<"Project"> | string;
-    userId?: Prisma.StringFilter<"Project"> | string;
+    description?: Prisma.StringNullableFilter<"Project"> | string | null;
+    framework?: Prisma.StringNullableFilter<"Project"> | string | null;
+    privacy?: Prisma.StringNullableFilter<"Project"> | string | null;
+    userId?: Prisma.StringNullableFilter<"Project"> | string | null;
     createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string;
+};
+export type ProjectCreateWithoutFilesInput = {
+    id?: string;
+    name: string;
+    description?: string | null;
+    framework?: string | null;
+    privacy?: string | null;
+    createdAt?: Date | string;
+    user?: Prisma.UserCreateNestedOneWithoutProjectsInput;
+};
+export type ProjectUncheckedCreateWithoutFilesInput = {
+    id?: string;
+    name: string;
+    description?: string | null;
+    framework?: string | null;
+    privacy?: string | null;
+    userId?: string | null;
+    createdAt?: Date | string;
+};
+export type ProjectCreateOrConnectWithoutFilesInput = {
+    where: Prisma.ProjectWhereUniqueInput;
+    create: Prisma.XOR<Prisma.ProjectCreateWithoutFilesInput, Prisma.ProjectUncheckedCreateWithoutFilesInput>;
+};
+export type ProjectUpsertWithoutFilesInput = {
+    update: Prisma.XOR<Prisma.ProjectUpdateWithoutFilesInput, Prisma.ProjectUncheckedUpdateWithoutFilesInput>;
+    create: Prisma.XOR<Prisma.ProjectCreateWithoutFilesInput, Prisma.ProjectUncheckedCreateWithoutFilesInput>;
+    where?: Prisma.ProjectWhereInput;
+};
+export type ProjectUpdateToOneWithWhereWithoutFilesInput = {
+    where?: Prisma.ProjectWhereInput;
+    data: Prisma.XOR<Prisma.ProjectUpdateWithoutFilesInput, Prisma.ProjectUncheckedUpdateWithoutFilesInput>;
+};
+export type ProjectUpdateWithoutFilesInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    framework?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    privacy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    user?: Prisma.UserUpdateOneWithoutProjectsNestedInput;
+};
+export type ProjectUncheckedUpdateWithoutFilesInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    framework?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    privacy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type ProjectCreateManyUserInput = {
     id?: string;
     name: string;
+    description?: string | null;
+    framework?: string | null;
+    privacy?: string | null;
     createdAt?: Date | string;
 };
 export type ProjectUpdateWithoutUserInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    framework?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    privacy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    files?: Prisma.FileUpdateManyWithoutProjectNestedInput;
 };
 export type ProjectUncheckedUpdateWithoutUserInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    framework?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    privacy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    files?: Prisma.FileUncheckedUpdateManyWithoutProjectNestedInput;
 };
 export type ProjectUncheckedUpdateManyWithoutUserInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    framework?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    privacy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+/**
+ * Count Type ProjectCountOutputType
+ */
+export type ProjectCountOutputType = {
+    files: number;
+};
+export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    files?: boolean | ProjectCountOutputTypeCountFilesArgs;
+};
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCountOutputType
+     */
+    select?: Prisma.ProjectCountOutputTypeSelect<ExtArgs> | null;
+};
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountFilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.FileWhereInput;
 };
 export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     name?: boolean;
+    description?: boolean;
+    framework?: boolean;
+    privacy?: boolean;
     userId?: boolean;
     createdAt?: boolean;
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    user?: boolean | Prisma.Project$userArgs<ExtArgs>;
+    files?: boolean | Prisma.Project$filesArgs<ExtArgs>;
+    _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["project"]>;
 export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     name?: boolean;
+    description?: boolean;
+    framework?: boolean;
+    privacy?: boolean;
     userId?: boolean;
     createdAt?: boolean;
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    user?: boolean | Prisma.Project$userArgs<ExtArgs>;
 }, ExtArgs["result"]["project"]>;
 export type ProjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     name?: boolean;
+    description?: boolean;
+    framework?: boolean;
+    privacy?: boolean;
     userId?: boolean;
     createdAt?: boolean;
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    user?: boolean | Prisma.Project$userArgs<ExtArgs>;
 }, ExtArgs["result"]["project"]>;
 export type ProjectSelectScalar = {
     id?: boolean;
     name?: boolean;
+    description?: boolean;
+    framework?: boolean;
+    privacy?: boolean;
     userId?: boolean;
     createdAt?: boolean;
 };
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "userId" | "createdAt", ExtArgs["result"]["project"]>;
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "framework" | "privacy" | "userId" | "createdAt", ExtArgs["result"]["project"]>;
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    user?: boolean | Prisma.Project$userArgs<ExtArgs>;
+    files?: boolean | Prisma.Project$filesArgs<ExtArgs>;
+    _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    user?: boolean | Prisma.Project$userArgs<ExtArgs>;
 };
 export type ProjectIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    user?: boolean | Prisma.Project$userArgs<ExtArgs>;
 };
 export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     name: "Project";
     objects: {
-        user: Prisma.$UserPayload<ExtArgs>;
+        user: Prisma.$UserPayload<ExtArgs> | null;
+        files: Prisma.$FilePayload<ExtArgs>[];
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: string;
         name: string;
-        userId: string;
+        description: string | null;
+        framework: string | null;
+        privacy: string | null;
+        userId: string | null;
         createdAt: Date;
     }, ExtArgs["result"]["project"]>;
     composites: {};
@@ -708,7 +918,8 @@ export interface ProjectDelegate<ExtArgs extends runtime.Types.Extensions.Intern
  */
 export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
-    user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    user<T extends Prisma.Project$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    files<T extends Prisma.Project$filesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$filesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -736,6 +947,9 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
 export interface ProjectFieldRefs {
     readonly id: Prisma.FieldRef<"Project", 'String'>;
     readonly name: Prisma.FieldRef<"Project", 'String'>;
+    readonly description: Prisma.FieldRef<"Project", 'String'>;
+    readonly framework: Prisma.FieldRef<"Project", 'String'>;
+    readonly privacy: Prisma.FieldRef<"Project", 'String'>;
     readonly userId: Prisma.FieldRef<"Project", 'String'>;
     readonly createdAt: Prisma.FieldRef<"Project", 'DateTime'>;
 }
@@ -1115,6 +1329,47 @@ export type ProjectDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
      * Limit how many Projects to delete.
      */
     limit?: number;
+};
+/**
+ * Project.user
+ */
+export type Project$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: Prisma.UserSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: Prisma.UserOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.UserInclude<ExtArgs> | null;
+    where?: Prisma.UserWhereInput;
+};
+/**
+ * Project.files
+ */
+export type Project$filesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: Prisma.FileSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: Prisma.FileOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.FileInclude<ExtArgs> | null;
+    where?: Prisma.FileWhereInput;
+    orderBy?: Prisma.FileOrderByWithRelationInput | Prisma.FileOrderByWithRelationInput[];
+    cursor?: Prisma.FileWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.FileScalarFieldEnum | Prisma.FileScalarFieldEnum[];
 };
 /**
  * Project without action

@@ -17,6 +17,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
     const [privacy, setPrivacy] = useState<'public' | 'private'>('public');
     const [pendingModule, setPendingModule] = useState<Module | null>(null);
     const [selectedModuleTypes, setSelectedModuleTypes] = useState<Record<string, 'js' | 'ts'>>({});
+    const [isCreating, setIsCreating] = useState(false);
 
     const navigate = useNavigate();
 
@@ -57,6 +58,8 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
     };
 
     const handleCreate = async () => {
+        setIsCreating(true);
+        const userId = localStorage.getItem('userId');
         // Create the project in the DB
         try {
             const res = await fetch('http://localhost:5000/api/projects', {
@@ -66,7 +69,8 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
                     name: projectName,
                     description,
                     framework: framework?.name,
-                    privacy
+                    privacy,
+                    userId: userId || null
                 })
             });
             if (res.ok) {
@@ -74,38 +78,44 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
                 localStorage.setItem('currentProjectId', data.id);
                 // Dispatch custom event so the current window updates immediately
                 window.dispatchEvent(new Event('projectChange'));
+
+                // Initialize the virtual workspace folders
+                try {
+                    await fetch('http://localhost:5000/api/files/init', { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ projectId: data.id })
+                    });
+                } catch (err) {
+                    console.error("Failed to init workspace", err);
+                }
+
+                // Request backend to copy template files to correct location
+                for (const moduleId of selectedModules) {
+                    const moduleDef = modules.find(m => m.id === moduleId);
+                    if (moduleDef?.requiresFileType) {
+                        const ftype = selectedModuleTypes[moduleId];
+                        try {
+                            await fetch('http://localhost:5000/api/files/template', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    moduleId,
+                                    fileType: ftype,
+                                    projectId: data.id
+                                })
+                            });
+                        } catch (err) {
+                            console.error("Failed to copy template", err);
+                        }
+                    }
+                }
             }
         } catch (err) {
             console.error("Failed to create project in DB", err);
         }
 
-        // Initialize the virtual workspace folders
-        try {
-            await fetch('http://localhost:5000/api/files/init', { method: 'POST' });
-        } catch (err) {
-            console.error("Failed to init workspace", err);
-        }
-
-        // Request backend to copy template files to correct location
-        for (const moduleId of selectedModules) {
-            const moduleDef = modules.find(m => m.id === moduleId);
-            if (moduleDef?.requiresFileType) {
-                const ftype = selectedModuleTypes[moduleId];
-                try {
-                    await fetch('http://localhost:5000/api/files/template', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            moduleId, 
-                            fileType: ftype 
-                        })
-                    });
-                } catch (err) {
-                    console.error("Failed to copy template", err);
-                }
-            }
-        }
-        
+        setIsCreating(false);
         onClose();
         navigate('/builder');
     };
@@ -219,11 +229,15 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
                         <div className="tips-icon">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 12a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                         </div>
-                        <button className="btn-create-project" onClick={handleCreate}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-                                <line x1="22" y1="2" x2="11" y2="13"></line>
-                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                            </svg>
+                        <button className="btn-create-project" onClick={handleCreate} disabled={isCreating}>
+                            {isCreating ? (
+                                <div className="loader-spinner"></div>
+                            ) : (
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            )}
                         </button>
                     </div>
                 </div>

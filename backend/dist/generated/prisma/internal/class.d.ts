@@ -144,6 +144,17 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
     get file(): Prisma.FileDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
+    /**
+     * `prisma.template`: Exposes CRUD operations for the **Template** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more Templates
+      * const templates = await prisma.template.findMany()
+      * ```
+      */
+    get template(): Prisma.TemplateDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
 }
 export declare function getPrismaClientClass(dirname: string): PrismaClientConstructor;
 //# sourceMappingURL=class.d.ts.map

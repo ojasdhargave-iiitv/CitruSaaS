@@ -249,3 +249,56 @@
     /* CitruSaaS orange roughly */
     border-radius: 2px;
 }
+
+.recent-projects-section {
+    padding: 24px 0;
+    margin-bottom: 24px;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.project-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.project-card:hover {
+    border-color: var(--accent-blue);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+}
+
+.project-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-blue);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.project-info h3 {
+    font-size: 14px;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.project-info p {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin: 0;
+}

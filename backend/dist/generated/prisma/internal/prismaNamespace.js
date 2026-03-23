@@ -70,7 +70,8 @@ export const AnyNull = runtime.objectEnumValues.instances.AnyNull;
 export const ModelName = {
     User: 'User',
     Project: 'Project',
-    File: 'File'
+    File: 'File',
+    Template: 'Template'
 };
 /**
  * Enums
@@ -91,6 +92,9 @@ export const UserScalarFieldEnum = {
 export const ProjectScalarFieldEnum = {
     id: 'id',
     name: 'name',
+    description: 'description',
+    framework: 'framework',
+    privacy: 'privacy',
     userId: 'userId',
     createdAt: 'createdAt'
 };
@@ -99,8 +103,17 @@ export const FileScalarFieldEnum = {
     name: 'name',
     path: 'path',
     type: 'type',
+    content: 'content',
     projectId: 'projectId',
     parentId: 'parentId',
+    createdAt: 'createdAt'
+};
+export const TemplateScalarFieldEnum = {
+    id: 'id',
+    name: 'name',
+    type: 'type',
+    path: 'path',
+    description: 'description',
     createdAt: 'createdAt'
 };
 export const SortOrder = {

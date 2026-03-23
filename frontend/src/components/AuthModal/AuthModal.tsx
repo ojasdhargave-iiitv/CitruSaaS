@@ -20,16 +20,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    // Sync mode whenever the modal is opened with a different initialMode
     useEffect(() => {
         if (isOpen) {
             setMode(initialMode);
-            setUsername('');
-            setEmail('');
-            setPassword('');
-            setConfirmPassword('');
-            setError('');
-            setSuccess('');
+            resetForm();
         }
     }, [isOpen, initialMode]);
 
@@ -59,6 +53,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
             const token = res.data.token;
             console.log('[Login Success] JWT:', token);
             localStorage.setItem('token', token);
+            if (res.data.user?.id) {
+                localStorage.setItem('userId', res.data.user.id);
+            }
             onClose();
             navigate('/');
         } catch (err: any) {
@@ -84,16 +81,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
         setLoading(true);
         try {
             const res = await api.post('/users/signup', { username, email, password });
-
-            // Store the JWT returned from signup
             const token = res.data.token;
             if (token) {
                 console.log('[Signup Success] JWT:', token);
                 localStorage.setItem('token', token);
+                if (res.data.user?.id) {
+                    localStorage.setItem('userId', res.data.user.id);
+                }
             }
-
             resetForm();
-            // Show success message then slide to login
             setSuccess(`Account created! Please sign in, ${username}.`);
             setTimeout(() => {
                 setSuccess('');
@@ -110,8 +106,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
     return (
         <div className="auth-backdrop" onClick={onClose}>
             <div className="auth-container" onClick={(e) => e.stopPropagation()}>
-
-                {/* Header */}
                 <div className="auth-header">
                     <div>
                         <h2 className="auth-title">
@@ -123,10 +117,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                                 : 'Join CitruSaaS and start building'}
                         </p>
                     </div>
-
                 </div>
 
-                {/* Body */}
                 <form onSubmit={mode === 'login' ? handleLogin : handleSignup}>
                     <div className="auth-body">
                         {error && <div className="auth-error">{error}</div>}
@@ -139,49 +131,41 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                             </div>
                         )}
 
-                        {/* Email — shown in both modes */}
                         <div className="auth-form-group">
-                            <label className="auth-label" htmlFor="auth-email">Email</label>
+                            <label className="auth-label">Email</label>
                             <input
-                                id="auth-email"
                                 className="auth-input"
                                 type="email"
                                 placeholder="you@example.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                autoComplete="email"
                             />
                         </div>
 
-                        {/* Username — only shown on signup */}
                         {mode === 'signup' && (
                             <div className="auth-form-group">
-                                <label className="auth-label" htmlFor="auth-username">Username</label>
+                                <label className="auth-label">Username</label>
                                 <input
-                                    id="auth-username"
                                     className="auth-input"
                                     type="text"
                                     placeholder="johndoe"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     required
-                                    autoComplete="username"
                                 />
                             </div>
                         )}
 
                         <div className="auth-form-group">
-                            <label className="auth-label" htmlFor="auth-password">Password</label>
+                            <label className="auth-label">Password</label>
                             <input
-                                id="auth-password"
                                 className="auth-input"
                                 type="password"
                                 placeholder="••••••••"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                             />
                             {mode === 'signup' && (
                                 <p className="auth-hint">Must be at least 6 characters long.</p>
@@ -190,34 +174,21 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
 
                         {mode === 'signup' && (
                             <div className="auth-form-group">
-                                <label className="auth-label" htmlFor="auth-confirm">Confirm Password</label>
+                                <label className="auth-label">Confirm Password</label>
                                 <input
-                                    id="auth-confirm"
                                     className="auth-input"
                                     type="password"
                                     placeholder="••••••••"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     required
-                                    autoComplete="new-password"
                                 />
                             </div>
                         )}
                     </div>
 
-                    {/* Footer */}
                     <div className="auth-footer">
                         <button type="submit" className="auth-submit-btn" disabled={loading}>
-                            {loading ? (
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
-                                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                                </svg>
-                            ) : (
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <line x1="22" y1="2" x2="11" y2="13" />
-                                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                                </svg>
-                            )}
                             {loading ? 'Please wait…' : mode === 'login' ? 'Sign In' : 'Create Account'}
                         </button>
 

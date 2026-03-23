@@ -59,3 +59,8 @@ export type Project = Prisma.ProjectModel
  * 
  */
 export type File = Prisma.FileModel
+/**
+ * Model Template
+ * 
+ */
+export type Template = Prisma.TemplateModel

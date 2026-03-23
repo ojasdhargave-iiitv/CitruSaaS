@@ -51,29 +51,44 @@ const getFileIconClass = (filename: string) => {
 const TreeNode: React.FC<{
     file: FileEntry;
     onFileSelect: (path: string) => void;
+    onSelect: (file: FileEntry) => void;
+    selectedPath: string | null;
     level: number;
-}> = ({ file, onFileSelect, level }) => {
+    refreshTrigger: number;
+}> = ({ file, onFileSelect, onSelect, selectedPath, level, refreshTrigger }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [children, setChildren] = useState<FileEntry[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    const fetchChildren = async () => {
+        if (file.type !== 'directory') return;
+        setIsLoading(true);
+        const projectId = localStorage.getItem('currentProjectId');
+        try {
+            const response = await fetch(`http://localhost:5000/api/files/list?dirPath=${encodeURIComponent(file.path)}&projectId=${projectId}`);
+            const data = await response.json();
+            if (response.ok) {
+                setChildren(data.files);
+            }
+        } catch (error) {
+            console.error("Error fetching files:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen) {
+            fetchChildren();
+        }
+    }, [isOpen, refreshTrigger]);
+
+    const isSelected = selectedPath === file.path;
+
     const toggleOpen = async (e: React.MouseEvent) => {
         e.stopPropagation();
+        onSelect(file);
         if (file.type === 'directory') {
-            if (!isOpen && children.length === 0) {
-                setIsLoading(true);
-                try {
-                    const response = await fetch(`http://localhost:5000/api/files/list?dirPath=${encodeURIComponent(file.path)}`);
-                    const data = await response.json();
-                    if (response.ok) {
-                        setChildren(data.files);
-                    }
-                } catch (error) {
-                    console.error("Error fetching files:", error);
-                } finally {
-                    setIsLoading(false);
-                }
-            }
             setIsOpen(!isOpen);
         } else {
             onFileSelect(file.path);
@@ -83,7 +98,7 @@ const TreeNode: React.FC<{
     return (
         <div>
             <div
-                className="tree-item"
+                className={`tree-item ${isSelected ? 'selected' : ''}`}
                 onClick={toggleOpen}
                 style={{ paddingLeft: `${level * 16}px` }}
             >
@@ -99,11 +114,19 @@ const TreeNode: React.FC<{
             </div>
             {isOpen && file.type === 'directory' && (
                 <div>
-                    {isLoading ? (
+                    {isLoading && children.length === 0 ? (
                         <div className="tree-item" style={{ paddingLeft: `${(level + 1) * 16 + 20}px`, color: '#666', fontSize: '12px' }}>Loading...</div>
                     ) : (
                         children.map(child => (
-                            <TreeNode key={child.path} file={child} onFileSelect={onFileSelect} level={level + 1} />
+                            <TreeNode 
+                                key={child.path} 
+                                file={child} 
+                                onFileSelect={onFileSelect} 
+                                onSelect={onSelect}
+                                selectedPath={selectedPath}
+                                level={level + 1} 
+                                refreshTrigger={refreshTrigger}
+                            />
                         ))
                     )}
                 </div>
@@ -117,11 +140,15 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
     const [isResizing, setIsResizing] = useState(false);
     const [files, setFiles] = useState<FileEntry[]>([]);
     const [isCreatingFile, setIsCreatingFile] = useState(false);
-    const [newFileName, setNewFileName] = useState("");
+    const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+    const [newItemName, setNewItemName] = useState("");
+    const [selectedItem, setSelectedItem] = useState<FileEntry | null>(null);
+    const [refreshCounter, setRefreshCounter] = useState(0);
 
     const fetchFiles = async () => {
+        const projectId = localStorage.getItem('currentProjectId');
         try {
-            const response = await fetch('http://localhost:5000/api/files/list');
+            const response = await fetch(`http://localhost:5000/api/files/list?projectId=${projectId}`);
             const data = await response.json();
             if (response.ok) {
                 setFiles(data.files);
@@ -164,36 +191,127 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
         };
     }, [resize, stopResizing]);
 
+    const getParentPath = (item: FileEntry | null) => {
+        if (!item) return "";
+        if (item.type === 'directory') return item.path;
+        const parts = item.path.split('/');
+        parts.pop();
+        return parts.join('/');
+    };
+
     const handleCreateFile = async (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
-            if (!newFileName.trim()) {
+            if (!newItemName.trim()) {
                 setIsCreatingFile(false);
                 return;
             }
 
+            const parentPath = getParentPath(selectedItem);
+            const filePath = parentPath ? `${parentPath}/${newItemName}` : newItemName;
+
+            const projectId = localStorage.getItem('currentProjectId');
             try {
                 const response = await fetch('http://localhost:5000/api/files/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ filePath: newFileName })
+                    body: JSON.stringify({ filePath, projectId })
                 });
 
                 if (response.ok) {
+                    setRefreshCounter(prev => prev + 1); // Trigger refresh for all trees
                     await fetchFiles();
-                    onFileSelect(newFileName);
+                    onFileSelect(filePath);
+                    setSelectedItem({ name: newItemName, type: 'file', path: filePath });
                     setIsCreatingFile(false);
-                    setNewFileName("");
+                    setNewItemName("");
                 } else {
-                    alert("Failed to create file");
+                    const data = await response.json();
+                    alert(data.error || "Failed to create file");
                 }
             } catch (error) {
                 console.error(error);
             }
         } else if (e.key === 'Escape') {
             setIsCreatingFile(false);
-            setNewFileName("");
+            setNewItemName("");
         }
     };
+
+    const handleCreateFolder = async (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            if (!newItemName.trim()) {
+                setIsCreatingFolder(false);
+                return;
+            }
+
+            const parentPath = getParentPath(selectedItem);
+            const folderPath = parentPath ? `${parentPath}/${newItemName}` : newItemName;
+
+            const projectId = localStorage.getItem('currentProjectId');
+            try {
+                const response = await fetch('http://localhost:5000/api/files/create-folder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ folderPath, projectId })
+                });
+
+                if (response.ok) {
+                    setRefreshCounter(prev => prev + 1); // Trigger refresh for all trees
+                    await fetchFiles();
+                    setSelectedItem({ name: newItemName, type: 'directory', path: folderPath });
+                    setIsCreatingFolder(false);
+                    setNewItemName("");
+                } else {
+                    const data = await response.json();
+                    alert(data.error || "Failed to create folder");
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        } else if (e.key === 'Escape') {
+            setIsCreatingFolder(false);
+            setNewItemName("");
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedItem) return;
+        
+        if (!window.confirm(`Are you sure you want to delete ${selectedItem.name}?`)) {
+            return;
+        }
+
+        const projectId = localStorage.getItem('currentProjectId');
+        try {
+            const response = await fetch('http://localhost:5000/api/files/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ itemPath: selectedItem.path, projectId })
+            });
+
+            if (response.ok) {
+                setRefreshCounter(prev => prev + 1);
+                fetchFiles();
+                setSelectedItem(null);
+            } else {
+                const data = await response.json();
+                alert(data.error || "Failed to delete item");
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        const handleGlobalKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Delete' && (selectedItem as any) && document.activeElement?.tagName !== 'INPUT') {
+                handleDelete();
+            }
+        };
+
+        window.addEventListener('keydown', handleGlobalKeyDown);
+        return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+    }, [selectedItem]);
 
     return (
         <div className="file-explorer" style={{ width: width }}>
@@ -201,11 +319,11 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
                 className={`resize-handle ${isResizing ? 'resizing' : ''}`}
                 onMouseDown={startResizing}
             />
-            <div className="explorer-header">
+            <div className="explorer-header" onClick={() => setSelectedItem(null)}>
                 <span className="explorer-title">Files</span>
-                <div className="explorer-actions">
-                    <div className="action-icon" onClick={() => setIsCreatingFile(true)} title="New File"><IconPlusFile /></div>
-                    <div className="action-icon" title="New Folder"><IconPlusFolder /></div>
+                <div className="explorer-actions" onClick={(e) => e.stopPropagation()}>
+                    <div className="action-icon" onClick={() => { setIsCreatingFolder(false); setIsCreatingFile(true); }} title="New File"><IconPlusFile /></div>
+                    <div className="action-icon" onClick={() => { setIsCreatingFile(false); setIsCreatingFolder(true); }} title="New Folder"><IconPlusFolder /></div>
                     <div className="action-icon"><IconMore /></div>
                 </div>
             </div>
@@ -221,18 +339,42 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
                         <input
                             autoFocus
                             type="text"
-                            value={newFileName}
-                            onChange={(e) => setNewFileName(e.target.value)}
+                            value={newItemName}
+                            onChange={(e) => setNewItemName(e.target.value)}
                             onKeyDown={handleCreateFile}
                             onBlur={() => setIsCreatingFile(false)}
                             className="new-file-input"
-                            placeholder="Enter file name"
+                            placeholder="File name"
                             title="Enter file name"
                         />
                     </div>
                 )}
+                {isCreatingFolder && (
+                    <div className="tree-item indent-1">
+                        <span className="item-icon folder-icon"><IconFolder /></span>
+                        <input
+                            autoFocus
+                            type="text"
+                            value={newItemName}
+                            onChange={(e) => setNewItemName(e.target.value)}
+                            onKeyDown={handleCreateFolder}
+                            onBlur={() => setIsCreatingFolder(false)}
+                            className="new-file-input"
+                            placeholder="Folder name"
+                            title="Enter folder name"
+                        />
+                    </div>
+                )}
                 {files.map((file) => (
-                    <TreeNode key={file.path} file={file} onFileSelect={onFileSelect} level={0} />
+                    <TreeNode 
+                        key={file.path} 
+                        file={file} 
+                        onFileSelect={onFileSelect} 
+                        onSelect={setSelectedItem}
+                        selectedPath={selectedItem?.path || null}
+                        level={0} 
+                        refreshTrigger={refreshCounter}
+                    />
                 ))}
             </div>
         </div>

@@ -15,20 +15,28 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email     String    @unique
   username  String    @unique
   password  String
   projects  Project[]
-  createdAt DateTime  @default(now())
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@map("users")
 }
 
 model Project {
-  id        String   @id @default(uuid())
-  name      String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  description String?
+  framework   String?
+  privacy     String?
+  userId      String?   @db.Uuid
+  user        User?     @relation(fields: [userId], references: [id])
+  files       File[]
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("projects")
 }
 
 model File {
@@ -36,7 +44,9 @@ model File {
   name      String
   path      String
   type      FileType
-  projectId String
+  content   String   @default("")
+  projectId String   @db.Uuid
+  project   Project  @relation(fields: [projectId], references: [id])
   parentId  String?
   createdAt DateTime @default(now())
 }
@@ -45,5 +55,13 @@ enum FileType {
   FILE
   FOLDER
 }
+model Template {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  type        String   // 'base' or 'initial'
+  path        String   // root path in storage
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
 
-
+  @@map("templates")
+}

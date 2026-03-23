@@ -369,3 +369,24 @@
     border-color: #3178c6;
     color: #3178c6;
 }
+
+.loader-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: black;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.btn-create-project:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}

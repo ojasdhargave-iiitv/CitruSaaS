@@ -256,6 +256,7 @@ export declare const ModelName: {
     readonly User: "User";
     readonly Project: "Project";
     readonly File: "File";
+    readonly Template: "Template";
 };
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
 export interface TypeMapCb<GlobalOmitOptions = {}> extends runtime.Types.Utils.Fn<{
@@ -268,7 +269,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         omit: GlobalOmitOptions;
     };
     meta: {
-        modelProps: "user" | "project" | "file";
+        modelProps: "user" | "project" | "file" | "template";
         txIsolationLevel: TransactionIsolationLevel;
     };
     model: {
@@ -494,6 +495,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
                 };
             };
         };
+        Template: {
+            payload: Prisma.$TemplatePayload<ExtArgs>;
+            fields: Prisma.TemplateFieldRefs;
+            operations: {
+                findUnique: {
+                    args: Prisma.TemplateFindUniqueArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplatePayload> | null;
+                };
+                findUniqueOrThrow: {
+                    args: Prisma.TemplateFindUniqueOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplatePayload>;
+                };
+                findFirst: {
+                    args: Prisma.TemplateFindFirstArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplatePayload> | null;
+                };
+                findFirstOrThrow: {
+                    args: Prisma.TemplateFindFirstOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplatePayload>;
+                };
+                findMany: {
+                    args: Prisma.TemplateFindManyArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplatePayload>[];
+                };
+                create: {
+                    args: Prisma.TemplateCreateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplatePayload>;
+                };
+                createMany: {
+                    args: Prisma.TemplateCreateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                createManyAndReturn: {
+                    args: Prisma.TemplateCreateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplatePayload>[];
+                };
+                delete: {
+                    args: Prisma.TemplateDeleteArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplatePayload>;
+                };
+                update: {
+                    args: Prisma.TemplateUpdateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplatePayload>;
+                };
+                deleteMany: {
+                    args: Prisma.TemplateDeleteManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateMany: {
+                    args: Prisma.TemplateUpdateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateManyAndReturn: {
+                    args: Prisma.TemplateUpdateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplatePayload>[];
+                };
+                upsert: {
+                    args: Prisma.TemplateUpsertArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplatePayload>;
+                };
+                aggregate: {
+                    args: Prisma.TemplateAggregateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AggregateTemplate>;
+                };
+                groupBy: {
+                    args: Prisma.TemplateGroupByArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.TemplateGroupByOutputType>[];
+                };
+                count: {
+                    args: Prisma.TemplateCountArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.TemplateCountAggregateOutputType> | number;
+                };
+            };
+        };
     };
 } & {
     other: {
@@ -539,6 +614,9 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export declare const ProjectScalarFieldEnum: {
     readonly id: "id";
     readonly name: "name";
+    readonly description: "description";
+    readonly framework: "framework";
+    readonly privacy: "privacy";
     readonly userId: "userId";
     readonly createdAt: "createdAt";
 };
@@ -548,11 +626,21 @@ export declare const FileScalarFieldEnum: {
     readonly name: "name";
     readonly path: "path";
     readonly type: "type";
+    readonly content: "content";
     readonly projectId: "projectId";
     readonly parentId: "parentId";
     readonly createdAt: "createdAt";
 };
 export type FileScalarFieldEnum = (typeof FileScalarFieldEnum)[keyof typeof FileScalarFieldEnum];
+export declare const TemplateScalarFieldEnum: {
+    readonly id: "id";
+    readonly name: "name";
+    readonly type: "type";
+    readonly path: "path";
+    readonly description: "description";
+    readonly createdAt: "createdAt";
+};
+export type TemplateScalarFieldEnum = (typeof TemplateScalarFieldEnum)[keyof typeof TemplateScalarFieldEnum];
 export declare const SortOrder: {
     readonly asc: "asc";
     readonly desc: "desc";
@@ -690,6 +778,7 @@ export type GlobalOmitConfig = {
     user?: Prisma.UserOmit;
     project?: Prisma.ProjectOmit;
     file?: Prisma.FileOmit;
+    template?: Prisma.TemplateOmit;
 };
 export type LogLevel = 'info' | 'query' | 'warn' | 'error';
 export type LogDefinition = {

@@ -51,7 +51,8 @@ export const AnyNull = runtime.objectEnumValues.instances.AnyNull
 export const ModelName = {
   User: 'User',
   Project: 'Project',
-  File: 'File'
+  File: 'File',
+  Template: 'Template'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -84,6 +85,9 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const ProjectScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  description: 'description',
+  framework: 'framework',
+  privacy: 'privacy',
   userId: 'userId',
   createdAt: 'createdAt'
 } as const
@@ -96,12 +100,25 @@ export const FileScalarFieldEnum = {
   name: 'name',
   path: 'path',
   type: 'type',
+  content: 'content',
   projectId: 'projectId',
   parentId: 'parentId',
   createdAt: 'createdAt'
 } as const
 
 export type FileScalarFieldEnum = (typeof FileScalarFieldEnum)[keyof typeof FileScalarFieldEnum]
+
+
+export const TemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  path: 'path',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type TemplateScalarFieldEnum = (typeof TemplateScalarFieldEnum)[keyof typeof TemplateScalarFieldEnum]
 
 
 export const SortOrder = {

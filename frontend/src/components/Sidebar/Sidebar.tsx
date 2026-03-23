@@ -1,5 +1,6 @@
 import React from 'react';
 import './Sidebar.css';
+import { Link, useLocation } from 'react-router-dom';
 
 const IconHome = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -71,6 +72,8 @@ const IconLogo = () => (
 );
 
 const Sidebar: React.FC = () => {
+  const location = useLocation();
+
   return (
     <div className="sidebar-container">
       <div className="sidebar-header">
@@ -91,10 +94,10 @@ const Sidebar: React.FC = () => {
           <div className="user-name">User's Account</div>
         </div>
 
-        <div className="nav-item active">
+        <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <span className="nav-icon"><IconHome /></span>
           Home
-        </div>
+        </Link>
 
         <div className="search-bar">
           <IconSearch />
@@ -104,10 +107,10 @@ const Sidebar: React.FC = () => {
 
       <div className="nav-section">
         <div className="nav-title">Projects</div>
-        <div className="nav-item">
+        <Link to="/dashboard" className={`nav-item ${location.pathname === '/dashboard' ? 'active' : ''}`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <span className="nav-icon"><IconGrid /></span>
           All Projects
-        </div>
+        </Link>
         <div className="nav-item">
           <span className="nav-icon"><IconUsers /></span>
           Shared with me

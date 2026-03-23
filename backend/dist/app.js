@@ -2,8 +2,9 @@ import express, {} from "express";
 import cors from "cors";
 import generateRoutes from "./routes/generator_route.js";
 import fileRoutes from "./routes/fileRoutes.js";
-import dotenv from "dotenv";
 import oauthRoutes from "./oauth.js";
+import userRoutes from "./routes/userRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
 const app = express();
 app.use(cors({
     origin: '*',
@@ -22,13 +23,10 @@ app.get("/", (req, res) => {
     </html>
   `);
 });
-import userRoutes from "./routes/userRoutes.js";
-import projectRoutes from "./routes/projectRoutes.js"; // Added projectRoutes
 app.use("/api", generateRoutes);
 app.use("/api", fileRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api", projectRoutes); // Added projectRoutes
-dotenv.config();
+app.use("/api", projectRoutes);
 app.use("/auth", oauthRoutes);
 export default app;
 //# sourceMappingURL=app.js.map

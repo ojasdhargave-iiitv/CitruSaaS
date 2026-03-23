@@ -78,7 +78,44 @@ const Home: React.FC = () => {
     const [selectedFramework, setSelectedFramework] = useState<Framework | null>(null);
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+    const [projects, setProjects] = useState<any[]>([]);
+    const [isLoadingProjects, setIsLoadingProjects] = useState(false);
     const navigate = useNavigate();
+
+    const fetchProjects = async () => {
+        setIsLoadingProjects(true);
+        try {
+            const response = await fetch('http://localhost:5000/api/projects');
+            if (response.ok) {
+                const data = await response.json();
+                setProjects(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch projects", error);
+        } finally {
+            setIsLoadingProjects(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProjects();
+    }, []);
+
+    const handleProjectClick = async (projectId: string) => {
+        try {
+            const response = await fetch('http://localhost:5000/api/files/load', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectId })
+            });
+            if (response.ok) {
+                localStorage.setItem('currentProjectId', projectId);
+                navigate('/builder');
+            }
+        } catch (error) {
+            console.error("Failed to load project", error);
+        }
+    };
 
     const openAuth = (mode: 'login' | 'signup') => {
         setAuthMode(mode);
@@ -133,6 +170,25 @@ const Home: React.FC = () => {
                         What will you <span className="highlight-green">Build</span> today?
                     </h1>
                 </div>
+
+                {projects.length > 0 && (
+                    <div className="recent-projects-section">
+                        <h2 className="section-title">Recent Projects</h2>
+                        <div className="projects-grid">
+                            {projects.map((project) => (
+                                <div key={project.id} className="project-card" onClick={() => handleProjectClick(project.id)}>
+                                    <div className="project-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                    </div>
+                                    <div className="project-info">
+                                        <h3>{project.name}</h3>
+                                        <p>{new Date(project.createdAt).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="section-header">
                     <div className="section-title-row">
