@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './TopBar.css';
+import { frameworks, Framework } from '../../types/config';
+import AddModulesModal from '../AddModulesModal/AddModulesModal';
 
 const IconLogo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -43,6 +45,8 @@ const IconBug = () => (
 
 const TopBar: React.FC = () => {
     const [projectName, setProjectName] = useState("User's App");
+    const [currentFramework, setCurrentFramework] = useState<Framework | null>(null);
+    const [isAddModulesModalOpen, setIsAddModulesModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchProjectInfo = async () => {
@@ -53,6 +57,10 @@ const TopBar: React.FC = () => {
                     if (res.ok) {
                         const data = await res.json();
                         if (data.name) setProjectName(data.name);
+                        if (data.framework) {
+                            const fw = frameworks.find(f => f.name === data.framework) || null;
+                            setCurrentFramework(fw);
+                        }
                     }
                 } catch (err) {
                     console.error("Failed to fetch project info", err);
@@ -67,6 +75,15 @@ const TopBar: React.FC = () => {
 
         return () => window.removeEventListener('projectChange', handleProjectChange);
     }, []);
+
+    const handleDownloadZip = () => {
+        const currentProjectId = localStorage.getItem('currentProjectId');
+        if (currentProjectId) {
+            window.open(`http://localhost:5000/api/files/download?projectId=${currentProjectId}`, '_blank');
+        } else {
+            alert('No project is currently loaded.');
+        }
+    };
 
     return (
         <div className="ide-top-bar">
@@ -83,11 +100,11 @@ const TopBar: React.FC = () => {
             {/* Center: Tabs */}
             <div className="top-bar-center">
                 <div className="tabs-row">
-                    <button className="tab-btn">
+                    {/* <button className="tab-btn">
                         <IconEye />
                         Preview
                         <span className="tab-close"><IconX /></span>
-                    </button>
+                    </button> */}
                     <button className="tab-btn">
                         <IconTerminal />
                         Console
@@ -115,8 +132,15 @@ const TopBar: React.FC = () => {
                 <button className="icon-btn" title="Settings" aria-label="Settings">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                 </button>
-                <button className="publish-btn" title="Publish" aria-label="Publish">Publish</button>
+                <button className="publish-btn" title="Add Modules" aria-label="Add Modules" onClick={() => setIsAddModulesModalOpen(true)}>Add Modules</button>
+                <button className="publish-btn" title="zip" aria-label="zip" onClick={handleDownloadZip}>Download ZIP</button>
             </div>
+            
+            <AddModulesModal 
+                isOpen={isAddModulesModalOpen} 
+                onClose={() => setIsAddModulesModalOpen(false)} 
+                framework={currentFramework} 
+            />
         </div>
     );
 };

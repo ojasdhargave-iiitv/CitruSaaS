@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createFile, createFolder, deleteItem, saveFile, getFile, listFiles, createTemplateFile, initWorkspace, loadProject } from "../controllers/fileController.js";
+import { createFile, createFolder, deleteItem, saveFile, getFile, listFiles, createTemplateFile, initWorkspace, loadProject, downloadProjectZip } from "../controllers/fileController.js";
 
 const router = Router();
 
@@ -12,5 +12,6 @@ router.get("/files/content", getFile);
 router.get("/files/list", listFiles);
 router.post("/files/template", createTemplateFile);
 router.post("/files/init", initWorkspace);
+router.get("/files/download", downloadProjectZip);
 
 export default router;

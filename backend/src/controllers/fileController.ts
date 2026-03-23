@@ -1,5 +1,6 @@
 import { type Request, type Response } from "express";
 import path from "path";
+import archiver from "archiver";
 import { prisma } from "../config/prisma.js";
 import { FileType } from "../generated/prisma/enums.js";
 import * as templateService from "../services/templateService.js";
@@ -292,5 +293,48 @@ export const initWorkspace = async (req: Request, res: Response) => {
     } catch (err: any) {
         console.error(err);
         res.status(500).json({ error: err.message });
+    }
+};
+
+export const downloadProjectZip = async (req: Request, res: Response) => {
+    try {
+        const { projectId } = req.query;
+        if (!projectId) {
+            return res.status(400).json({ error: "ProjectId is required" });
+        }
+
+        const project = await prisma.project.findUnique({ where: { id: projectId as string } });
+        if (!project) return res.status(404).json({ error: "Project not found" });
+
+        const files = await prisma.file.findMany({
+            where: { projectId: projectId as string, type: FileType.FILE }
+        });
+
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-Disposition', `attachment; filename="${project.name || 'project'}.zip"`);
+
+        const archive = archiver('zip', {
+            zlib: { level: 9 }
+        });
+
+        archive.on('error', function(err) {
+            console.error(err);
+            if (!res.headersSent) {
+                res.status(500).json({ error: err.message });
+            }
+        });
+
+        archive.pipe(res);
+
+        for (const file of files) {
+            archive.append(file.content || '', { name: file.path });
+        }
+
+        await archive.finalize();
+    } catch (err: any) {
+        console.error(err);
+        if (!res.headersSent) {
+            res.status(500).json({ error: err.message });
+        }
     }
 };

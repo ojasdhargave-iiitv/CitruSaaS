@@ -40,7 +40,7 @@
 }
 
 .explorer-title {
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 500;
     color: var(--text-secondary);
 }
@@ -52,8 +52,8 @@
 }
 
 .action-icon {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
     cursor: pointer;
 }
 
