@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import FileExplorer from './FileExplorer';
 import TopBar from './TopBar';
 import CodeEditor from './CodeEditor';
+import { useToast } from '../../contexts/ToastContext';
 import './IDELayout.css';
 
 export interface ActiveFile {
@@ -12,6 +13,7 @@ export interface ActiveFile {
 
 const IDELayout: React.FC = () => {
     const [activeFile, setActiveFile] = useState<ActiveFile | null>(null);
+    const { showToast } = useToast();
 
     const handleFileSelect = async (filePath: string) => {
         const projectId = localStorage.getItem('currentProjectId');
@@ -43,8 +45,11 @@ const IDELayout: React.FC = () => {
             });
             if (response.ok) {
                 console.log("File saved!");
+                showToast("File saved successfully!", "success");
+                setActiveFile({ ...activeFile, content });
             } else {
                 console.error("Failed to save file");
+                showToast("Failed to save file.", "error");
             }
         } catch (error) {
             console.error("Error saving file:", error);

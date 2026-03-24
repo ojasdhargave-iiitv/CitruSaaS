@@ -41,8 +41,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ activeFile, onSave }) => {
     }, [code]);
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
             e.preventDefault();
+            e.stopPropagation();
             if (activeFile) {
                 onSave(code);
             }
@@ -64,6 +65,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ activeFile, onSave }) => {
                         className="code-input-area"
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         spellCheck={false}
                         disabled={!activeFile}
                         style={{ height: `${lineCount * 1.6}em`, minHeight: '100%' }}
@@ -95,9 +97,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ activeFile, onSave }) => {
                 <div className="footer-item">
                     Spaces: 2
                 </div>
-                <div className="footer-item">
-                    History
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '4px' }}><path d="M12 2v10l4.5 4.5M22 12A10 10 0 1 1 12 2a10 10 0 0 1 10 10z"></path></svg>
+                <div className="footer-item" onClick={() => activeFile && onSave(code)} style={{ cursor: 'pointer', fontWeight: 'bold' }}>
+                    Save (Ctrl+S)
                 </div>
             </div>
         </div>

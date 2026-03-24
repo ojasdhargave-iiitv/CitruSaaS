@@ -15,11 +15,13 @@ import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { api } from "@/services/api"
+import { useToast } from "@/contexts/ToastContext"
 
 export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const navigate = useNavigate()
+    const { showToast } = useToast()
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -29,7 +31,7 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
             navigate("/dashboard")
         } catch (error) {
             console.error("Login failed:", error)
-            alert("Invalid credentials")
+            showToast("Invalid credentials", "error")
         }
     }
 
