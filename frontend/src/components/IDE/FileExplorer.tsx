@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../../contexts/ToastContext';
 import './FileExplorer.css';
 
 interface FileExplorerProps {
@@ -144,6 +145,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
     const [newItemName, setNewItemName] = useState("");
     const [selectedItem, setSelectedItem] = useState<FileEntry | null>(null);
     const [refreshCounter, setRefreshCounter] = useState(0);
+    const { showToast } = useToast();
 
     const fetchFiles = async () => {
         const projectId = localStorage.getItem('currentProjectId');
@@ -234,7 +236,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
                     setNewItemName("");
                 } else {
                     const data = await response.json();
-                    alert(data.error || "Failed to create file");
+                    showToast(data.error || "Failed to create file", "error");
                 }
             } catch (error) {
                 console.error(error);
@@ -271,7 +273,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
                     setNewItemName("");
                 } else {
                     const data = await response.json();
-                    alert(data.error || "Failed to create folder");
+                    showToast(data.error || "Failed to create folder", "error");
                 }
             } catch (error) {
                 console.error(error);
@@ -303,7 +305,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
                 setSelectedItem(null);
             } else {
                 const data = await response.json();
-                alert(data.error || "Failed to delete item");
+                showToast(data.error || "Failed to delete item", "error");
             }
         } catch (error) {
             console.error(error);

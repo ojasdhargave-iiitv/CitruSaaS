@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './TopBar.css';
 import { frameworks, Framework } from '../../types/config';
 import AddModulesModal from '../AddModulesModal/AddModulesModal';
+import { useToast } from '../../contexts/ToastContext';
 
 const IconLogo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -47,6 +48,7 @@ const TopBar: React.FC = () => {
     const [projectName, setProjectName] = useState("User's App");
     const [currentFramework, setCurrentFramework] = useState<Framework | null>(null);
     const [isAddModulesModalOpen, setIsAddModulesModalOpen] = useState(false);
+    const { showToast } = useToast();
 
     useEffect(() => {
         const fetchProjectInfo = async () => {
@@ -81,7 +83,7 @@ const TopBar: React.FC = () => {
         if (currentProjectId) {
             window.open(`http://localhost:5000/api/files/download?projectId=${currentProjectId}`, '_blank');
         } else {
-            alert('No project is currently loaded.');
+            showToast('No project is currently loaded.', 'error');
         }
     };
 
