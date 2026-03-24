@@ -1,0 +1,12 @@
+﻿error TS6059: File 'D:/CitruSaaS/backend/check-db.ts' is not under 'rootDir' 'D:/CitruSaaS/backend/src'. 'rootDir' is expected to contain all source files.
+  The file is in the program because:
+    Matched by default include pattern '**/*'
+  File is ECMAScript module because 'D:/CitruSaaS/backend/package.json' has field "type" with value "module"
+error TS6059: File 'D:/CitruSaaS/backend/supabase/functions/hello/index.ts' is not under 'rootDir' 'D:/CitruSaaS/backend/src'. 'rootDir' is expected to contain all source files.
+  The file is in the program because:
+    Matched by default include pattern '**/*'
+  File is ECMAScript module because 'D:/CitruSaaS/backend/package.json' has field "type" with value "module"
+error TS6059: File 'D:/CitruSaaS/backend/temp-check.ts' is not under 'rootDir' 'D:/CitruSaaS/backend/src'. 'rootDir' is expected to contain all source files.
+  The file is in the program because:
+    Matched by default include pattern '**/*'
+  File is ECMAScript module because 'D:/CitruSaaS/backend/package.json' has field "type" with value "module"

@@ -88,11 +88,11 @@ const TopBar: React.FC = () => {
     return (
         <div className="ide-top-bar">
             {/* Left: Breadcrumbs */}
-            <div className="top-bar-left">
+            <div className="top-bar-left" onClick={() => window.location.href = '/'}>
                 <IconLogo />
                 <div className="app-breadcrumb">
                     <span>/</span>
-                    <span className="app-name">{projectName}</span>
+                    <span className="app-name" >{projectName}</span>
                     <IconLock />
                 </div>
             </div>
