@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../services/api';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -85,7 +86,7 @@ const Home: React.FC = () => {
     const fetchProjects = async () => {
         setIsLoadingProjects(true);
         try {
-            const response = await fetch('http://localhost:5000/api/projects');
+            const response = await fetch(`${API_BASE_URL}/projects`);
             if (response.ok) {
                 const data = await response.json();
                 setProjects(data);
@@ -103,7 +104,7 @@ const Home: React.FC = () => {
 
     const handleProjectClick = async (projectId: string) => {
         try {
-            const response = await fetch('http://localhost:5000/api/files/load', {
+            const response = await fetch(`${API_BASE_URL}/files/load`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ projectId })

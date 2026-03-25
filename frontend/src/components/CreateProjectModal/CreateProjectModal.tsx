@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../services/api';
 import React, { useState, useEffect } from 'react';
 import './CreateProjectModal.css';
 import { Framework, Module } from '../../types/config';
@@ -62,7 +63,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
         const userId = localStorage.getItem('userId');
         // Create the project in the DB
         try {
-            const res = await fetch('http://localhost:5000/api/projects', {
+            const res = await fetch(`${API_BASE_URL}/projects`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -81,7 +82,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
 
                 // Initialize the virtual workspace folders
                 try {
-                    await fetch('http://localhost:5000/api/files/init', { 
+                    await fetch(`${API_BASE_URL}/files/init`, { 
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ projectId: data.id })
@@ -96,7 +97,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose
                     if (moduleDef?.requiresFileType) {
                         const ftype = selectedModuleTypes[moduleId];
                         try {
-                            await fetch('http://localhost:5000/api/files/template', {
+                            await fetch(`${API_BASE_URL}/files/template`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({

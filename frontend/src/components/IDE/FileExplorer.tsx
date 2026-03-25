@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../services/api';
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../contexts/ToastContext';
 import './FileExplorer.css';
@@ -66,7 +67,7 @@ const TreeNode: React.FC<{
         setIsLoading(true);
         const projectId = localStorage.getItem('currentProjectId');
         try {
-            const response = await fetch(`http://localhost:5000/api/files/list?dirPath=${encodeURIComponent(file.path)}&projectId=${projectId}`);
+            const response = await fetch(`${API_BASE_URL}/files/list?dirPath=${encodeURIComponent(file.path)}&projectId=${projectId}`);
             const data = await response.json();
             if (response.ok) {
                 setChildren(data.files);
@@ -150,7 +151,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
     const fetchFiles = async () => {
         const projectId = localStorage.getItem('currentProjectId');
         try {
-            const response = await fetch(`http://localhost:5000/api/files/list?projectId=${projectId}`);
+            const response = await fetch(`${API_BASE_URL}/files/list?projectId=${projectId}`);
             const data = await response.json();
             if (response.ok) {
                 setFiles(data.files);
@@ -221,7 +222,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
 
             const projectId = localStorage.getItem('currentProjectId');
             try {
-                const response = await fetch('http://localhost:5000/api/files/create', {
+                const response = await fetch(`${API_BASE_URL}/files/create`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ filePath, projectId })
@@ -259,7 +260,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
 
             const projectId = localStorage.getItem('currentProjectId');
             try {
-                const response = await fetch('http://localhost:5000/api/files/create-folder', {
+                const response = await fetch(`${API_BASE_URL}/files/create-folder`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ folderPath, projectId })
@@ -293,7 +294,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
 
         const projectId = localStorage.getItem('currentProjectId');
         try {
-            const response = await fetch('http://localhost:5000/api/files/delete', {
+            const response = await fetch(`${API_BASE_URL}/files/delete`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ itemPath: selectedItem.path, projectId })

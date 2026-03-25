@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../services/api';
 import React, { useState } from 'react';
 import FileExplorer from './FileExplorer';
 import TopBar from './TopBar';
@@ -18,7 +19,7 @@ const IDELayout: React.FC = () => {
     const handleFileSelect = async (filePath: string) => {
         const projectId = localStorage.getItem('currentProjectId');
         try {
-            const response = await fetch(`http://localhost:5000/api/files/content?filePath=${encodeURIComponent(filePath)}&projectId=${projectId}`);
+            const response = await fetch(`${API_BASE_URL}/files/content?filePath=${encodeURIComponent(filePath)}&projectId=${projectId}`);
             const data = await response.json();
             if (response.ok) {
                 setActiveFile({
@@ -38,7 +39,7 @@ const IDELayout: React.FC = () => {
         if (!activeFile) return;
         const projectId = localStorage.getItem('currentProjectId');
         try {
-            const response = await fetch('http://localhost:5000/api/files/save', {
+            const response = await fetch(`${API_BASE_URL}/files/save`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ filePath: activeFile.path, content, projectId })
