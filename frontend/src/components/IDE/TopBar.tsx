@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../services/api';
 import React, { useState, useEffect } from 'react';
 import './TopBar.css';
 import { frameworks, Framework } from '../../types/config';
@@ -55,7 +56,7 @@ const TopBar: React.FC = () => {
             const currentProjectId = localStorage.getItem('currentProjectId');
             if (currentProjectId) {
                 try {
-                    const res = await fetch(`http://localhost:5000/api/projects/${currentProjectId}`);
+                    const res = await fetch(`${API_BASE_URL}/projects/${currentProjectId}`);
                     if (res.ok) {
                         const data = await res.json();
                         if (data.name) setProjectName(data.name);
@@ -81,7 +82,7 @@ const TopBar: React.FC = () => {
     const handleDownloadZip = () => {
         const currentProjectId = localStorage.getItem('currentProjectId');
         if (currentProjectId) {
-            window.open(`http://localhost:5000/api/files/download?projectId=${currentProjectId}`, '_blank');
+            window.open(`${API_BASE_URL}/files/download?projectId=${currentProjectId}`, '_blank');
         } else {
             showToast('No project is currently loaded.', 'error');
         }

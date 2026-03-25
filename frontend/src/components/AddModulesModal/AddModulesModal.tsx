@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../services/api';
 import React, { useState, useEffect } from 'react';
 import '../CreateProjectModal/CreateProjectModal.css';
 import { Framework, Module } from '../../types/config';
@@ -64,7 +65,7 @@ const AddModulesModal: React.FC<AddModulesModalProps> = ({ isOpen, onClose, fram
                 const moduleDef = modules.find(m => m.id === moduleId);
                 if (moduleDef?.requiresFileType) {
                     const ftype = selectedModuleTypes[moduleId];
-                    await fetch('http://localhost:5000/api/files/template', {
+                    await fetch(`${API_BASE_URL}/files/template`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({

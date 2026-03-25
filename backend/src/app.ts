@@ -8,8 +8,14 @@ import projectRoutes from "./routes/projectRoutes.js";
 
 const app: Application = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  process.env.FRONTEND_URL
+].filter(Boolean) as string[];
+
 app.use(cors({
-  origin: '*',
+  origin: process.env.FRONTEND_URL ? allowedOrigins : '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['*']
 }));
