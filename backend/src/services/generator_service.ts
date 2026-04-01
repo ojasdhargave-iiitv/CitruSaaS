@@ -33,7 +33,7 @@ export const generateProject = async (config: BoilerplateConfig) => {
     
     // Handle specific config options like auth
     if (config.auth === "jwt") {
-      selectedModules.push("jwt-auth");
+      selectedModules.push("auth");
     }
     
     // Add any specific extra modules from config
