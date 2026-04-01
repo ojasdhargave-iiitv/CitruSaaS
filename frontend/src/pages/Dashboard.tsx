@@ -38,7 +38,13 @@ const Dashboard = () => {
 
     const fetchProjects = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/projects`);
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                setProjects([]);
+                setIsLoading(false);
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/projects?userId=${userId}`);
             if (response.ok) {
                 const data = await response.json();
                 setProjects(data);

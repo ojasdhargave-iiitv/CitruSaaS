@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Sidebar.css';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../services/api';
 
 const IconHome = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -73,6 +74,41 @@ const IconLogo = () => (
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [projects, setProjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSidebarProjects = async () => {
+      const userId = localStorage.getItem('userId');
+      if (!userId) return;
+      try {
+        const response = await fetch(`${API_BASE_URL}/projects?userId=${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setProjects(data.slice(0, 3));
+        }
+      } catch (error) {
+        console.error("Failed to fetch sidebar projects", error);
+      }
+    };
+    fetchSidebarProjects();
+  }, []);
+
+  const handleProjectClick = async (projectId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/files/load`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId })
+      });
+      if (response.ok) {
+        localStorage.setItem('currentProjectId', projectId);
+        navigate('/builder');
+      }
+    } catch (error) {
+      console.error("Failed to load project", error);
+    }
+  };
 
   return (
     <div className="sidebar-container">
@@ -111,6 +147,12 @@ const Sidebar: React.FC = () => {
           <span className="nav-icon"><IconGrid /></span>
           All Projects
         </Link>
+        {projects.map(p => (
+          <div key={p.id} className="nav-item" style={{ paddingLeft: '40px', fontSize: '13px', cursor: 'pointer' }} onClick={() => handleProjectClick(p.id)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '8px'}}><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</span>
+          </div>
+        ))}
         <div className="nav-item">
           <span className="nav-icon"><IconUsers /></span>
           Shared with me
