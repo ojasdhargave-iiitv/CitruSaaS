@@ -288,10 +288,6 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
     const handleDelete = async () => {
         if (!selectedItem) return;
         
-        if (!window.confirm(`Are you sure you want to delete ${selectedItem.name}?`)) {
-            return;
-        }
-
         const projectId = localStorage.getItem('currentProjectId');
         try {
             const response = await fetch(`${API_BASE_URL}/files/delete`, {
@@ -303,6 +299,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ onFileSelect }) => {
             if (response.ok) {
                 setRefreshCounter(prev => prev + 1);
                 fetchFiles();
+                showToast(`${selectedItem.name} deleted successfully`, "success");
                 setSelectedItem(null);
             } else {
                 const data = await response.json();

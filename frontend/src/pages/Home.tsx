@@ -86,7 +86,13 @@ const Home: React.FC = () => {
     const fetchProjects = async () => {
         setIsLoadingProjects(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/projects`);
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                setProjects([]);
+                setIsLoadingProjects(false);
+                return;
+            }
+            const response = await fetch(`${API_BASE_URL}/projects?userId=${userId}`);
             if (response.ok) {
                 const data = await response.json();
                 setProjects(data);
@@ -141,6 +147,8 @@ const Home: React.FC = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('currentProjectId');
         setIsLoggedIn(false);
         window.location.reload();
     };

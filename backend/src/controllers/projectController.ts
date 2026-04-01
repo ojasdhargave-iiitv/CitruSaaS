@@ -49,7 +49,13 @@ export const getProject = async (req: Request, res: Response) => {
 
 export const listProjects = async (req: Request, res: Response) => {
     try {
+        const { userId } = req.query;
+        if (!userId) {
+            return res.json([]);
+        }
+
         const projects = await prisma.project.findMany({
+            where: { userId: userId as string },
             orderBy: { createdAt: 'desc' }
         });
         res.json(projects);
