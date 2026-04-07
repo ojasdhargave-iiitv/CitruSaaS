@@ -5,6 +5,7 @@ import fileRoutes from "./routes/fileRoutes.js";
 import oauthRoutes from "./oauth.js";
 import userRoutes from "./routes/userRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
+import dodoRoutes from "./routes/dodoRoutes.js";
 
 const app: Application = express();
 
@@ -37,6 +38,7 @@ app.use("/api", generateRoutes);
 app.use("/api", fileRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", projectRoutes);
+app.use("/api/dodo", dodoRoutes);
 app.use("/auth", oauthRoutes);
 
 export default app;

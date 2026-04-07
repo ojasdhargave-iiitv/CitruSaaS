@@ -19,6 +19,7 @@ model User {
   email     String    @unique
   username  String    @unique
   password  String
+  isPremium Boolean   @default(false)
   projects  Project[]
   createdAt DateTime  @default(now()) @map("created_at")
 

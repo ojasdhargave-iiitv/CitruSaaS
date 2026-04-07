@@ -1,0 +1,34 @@
+# CitruSaaS - Overall Project Summary
+
+## 1. Project Overview
+CitruSaaS is a comprehensive, dynamic web application designed to empower developers by seamlessly managing project workspaces. It functions as a cloud-based Integrated Development Environment (IDE) that offers a user-friendly interface. Users can create, modify, explore, and manage their software projects and codebase robustly straight from the browser. One of its standout capabilities is a dynamic module generator that can instantly assemble and inject complex, full-featured backend boilerplates (like JWT Authentication) directly into project source code.
+
+## 2. Core Features
+- **Project & Workspace Management**: Robust creation, loading, editing, and deletion of user-specific projects. Ensures strict project mapping to distinct User IDs to prevent unauthorized data access.
+- **Dynamic File Explorer**: An intuitive built-in file and directory manager replicating standard IDE navigation behavior. Features custom UI elements such as toast notifications for crucial feedback.
+- **In-Browser Code Editor**: Direct integratiaon that enables real-time code modifications. Implements a keyboard shortcut flow (e.g., `Ctrl+S`) to synchronize and save file states directly back to the database.
+- **Manifest-Driven Module Generator**: An intelligent backend module assembler powered by `manifest.json` configurations. Handles file copying, route injection, dependency resolution, and middleware configuration seamlessly.
+- **Database Persistence**: Leverages robust database syncing maintaining consistency for files, folders, and project metadata schemas.
+
+## 3. Technology Stack
+
+### Frontend Architecture
+- **Framework**: React 19 with Vite for ultra-fast Hot Module Replacement (HMR) and optimized builds.
+- **Language**: TypeScript for static type safety and predictability across the stack.
+- **Styling**: TailwindCSS & Shadcn UI, providing a sleek, modern, and highly responsive user interface.
+- **Routing & Networking**: React Router DOM for client-side routing, and Axios for handling asynchronous REST API communication with the backend.
+
+### Backend Architecture
+- **Runtime & Framework**: Node.js powered by Express 5.x, with execution handled by `tsx`.
+- **Language**: TypeScript for cohesive full-stack type definitions.
+- **Database & ORM**: PostgreSQL server integrated using Prisma ORM for elegant, type-safe database migrations and interactions. Supabase handles database hosting.
+- **Security & Authentication**: Bcrypt for robust password hashing, and JsonWebToken (JWT) for secure session management and endpoint protection.
+- **Validation & Utilities**: Zod is heavily utilized for stringent schema validation. `fs-extra` and `archiver` drive the file system abstraction and templating functionality.
+
+## 4. Software Quality & Deployment
+- **Testing Methodologies**: The project embraces comprehensive software testing architectures emphasizing both Black-Box and White-Box testing strategies. Structured loop tests and documented methodologies are enforced to ensure stability on both user-facing forms and internal code functions.
+- **Documentation**: Professionalized with overarching documentation including an intricate README, MIT License, Security Policies, and Contributor Code of Conduct guidelines.
+- **Deployment Mechanics**: Built with production-ready execution flows. Scripts are optimized to bypass Render deployment bottlenecks (such as Prisma generation permission issues).
+
+## 5. Summary
+CitruSaaS bridges the gap between conventional file management and highly extensible, boilerplate-free modern SaaS architecture. By combining a flexible browser-based editor module interacting synchronously with an advanced TypeScript+Prisma backend, the project establishes an innovative benchmark for developer tooling on the web.

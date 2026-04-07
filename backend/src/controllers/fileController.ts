@@ -222,21 +222,28 @@ export const createTemplateFile = async (req: Request, res: Response) => {
             return res.status(400).json({ error: "moduleId, fileType and projectId are required" });
         }
 
-        // Map frontend IDs to storage filenames
-        const moduleMap: Record<string, string> = {
-            'jwt': 'JwtAuth',
-            'zod': 'ZodSetup',
-            'websocket': 'WebSocket',
-            'oauth': 'OAuthSetup',
-            'prisma': 'PrismaSetup',
-            'stripe': 'StripeSetup',
-            'mongodb': 'MongoDBSetup',
-            'mysql': 'MySQLSetup',
-            'sessions': 'SessionsSetup'
+        // Map frontend IDs to specific storage filenames
+        const fileMap: Record<string, { ts: string, js: string }> = {
+            'jwt': { ts: 'JwtAuth_TS.ts', js: 'JwtAuth_JS.js' },
+            'zod': { ts: 'ZodSetup_TS.ts', js: 'ZodSetup_JS.js' },
+            'websocket': { ts: 'WebSocket_TS.ts', js: 'WebSocket_JS.js' },
+            'oauth': { ts: 'oauth.ts', js: 'oauth.js' },
+            'stripe': { ts: 'stripe.ts', js: 'stripe.js' },
+            'mongodb': { ts: 'MongoDB.ts', js: 'MongoDB.js' },
+            'postgre': { ts: 'PostgreSQL.ts', js: 'PostgreSQL.js' },
+            'sessions': { ts: 'sessions&cookie.ts', js: 'sessions&cookie.js' },
+            'mysql': { ts: 'MySQLSetup_TS.ts', js: 'MySQLSetup_JS.js' },
+            'prisma': { ts: 'PrismaSetup_TS.ts', js: 'PrismaSetup_JS.js' }
         };
 
-        const baseName = moduleMap[moduleId] || (moduleId.charAt(0).toUpperCase() + moduleId.slice(1) + 'Setup');
-        const sourceName = fileType === 'ts' ? `${baseName}_TS.ts` : `${baseName}_JS.js`;
+        let sourceName: string;
+        if (fileMap[moduleId]) {
+            sourceName = fileType === 'ts' ? fileMap[moduleId].ts : fileMap[moduleId].js;
+        } else {
+            const baseName = moduleId.charAt(0).toUpperCase() + moduleId.slice(1) + 'Setup';
+            sourceName = fileType === 'ts' ? `${baseName}_TS.ts` : `${baseName}_JS.js`;
+        }
+
         const targetPath = `backend/src/${sourceName}`;
 
         // Fetch from Supabase Storage templates/base/...

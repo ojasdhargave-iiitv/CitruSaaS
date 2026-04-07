@@ -42,7 +42,7 @@ export const userSignupPost = async (req: any, res: any) => {
       { expiresIn: '30d' }
     );
 
-    res.status(201).json({ message: 'User signup successful', token, user: { id: user.id, username: user.username, email: user.email } });
+    res.status(201).json({ message: 'User signup successful', token, user: { id: user.id, username: user.username, email: user.email, isPremium: user.isPremium } });
 
   } catch (err: any) {
     console.error('[Signup Error]', err);
@@ -77,10 +77,44 @@ export const userLoginPost = async (req: any, res: any) => {
       { expiresIn: '30d' }
     );
 
-    res.status(200).json({ message: 'User login successful', token, user: { id: user.id, username: user.username, email: user.email } });
+    res.status(200).json({ message: 'User login successful', token, user: { id: user.id, username: user.username, email: user.email, isPremium: user.isPremium } });
 
   } catch (err: any) {
     console.error('[Login Error]', err);
     res.status(500).json({ error: 'Login failed. Please try again.' });
+  }
+};
+
+export const upgradePremium = async (req: any, res: any) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ error: 'userId is required' });
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { isPremium: true }
+    });
+
+    res.status(200).json({ message: 'User upgraded to premium', isPremium: user.isPremium });
+  } catch (err: any) {
+    console.error('[Upgrade Premium Error]', err);
+    res.status(500).json({ error: 'Upgrade failed.' });
+  }
+};
+
+export const downgradePremium = async (req: any, res: any) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ error: 'userId is required' });
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { isPremium: false }
+    });
+
+    res.status(200).json({ message: 'User downgraded to free tier', isPremium: user.isPremium });
+  } catch (err: any) {
+    console.error('[Downgrade Premium Error]', err);
+    res.status(500).json({ error: 'Downgrade failed.' });
   }
 };

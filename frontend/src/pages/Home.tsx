@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar/Sidebar';
 import CreateProjectModal from '../components/CreateProjectModal/CreateProjectModal';
+import PremiumOverlay from '../components/PremiumOverlay/PremiumOverlay';
 import AuthModal from '../components/AuthModal/AuthModal';
+import { DodoPayments } from "dodopayments-checkout";
 import { frameworks, Framework } from '../types/config';
 import './Home.css';
 
@@ -76,6 +78,7 @@ const getIcon = (id: string) => {
 
 const Home: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isPremiumOverlayOpen, setIsPremiumOverlayOpen] = useState(false);
     const [selectedFramework, setSelectedFramework] = useState<Framework | null>(null);
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
@@ -106,6 +109,31 @@ const Home: React.FC = () => {
 
     useEffect(() => {
         fetchProjects();
+
+        // Check if returning from Dodo Payments checkout
+        const queryParams = new URLSearchParams(window.location.search);
+        if (queryParams.has('session_id') || queryParams.has('payment_id')) {
+            const upgradeUser = async () => {
+                const userId = localStorage.getItem('userId');
+                if (userId) {
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/users/premium`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId })
+                        });
+                        if (response.ok) {
+                            localStorage.setItem('isPremium', 'true');
+                        }
+                    } catch (e) {
+                        console.error('Failed to upgrade user', e);
+                    }
+                }
+                // Clear URL params
+                window.history.replaceState({}, document.title, "/");
+            };
+            upgradeUser();
+        }
     }, []);
 
     const handleProjectClick = async (projectId: string) => {
@@ -130,14 +158,55 @@ const Home: React.FC = () => {
     };
 
     const handleFrameworkClick = (framework: Framework) => {
+        if (framework.isPremium && localStorage.getItem('isPremium') !== 'true') {
+            setIsPremiumOverlayOpen(true);
+            return;
+        }
         setSelectedFramework(framework);
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        // keeping selectedFramework for fade out animation if needed, or null it after
         setTimeout(() => setSelectedFramework(null), 300);
+    };
+
+    const handleSubscriptionClick = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/dodo/checkout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    product_cart: [
+                        { product_id: import.meta.env.VITE_DODO_PRODUCT_ID, quantity: 1 }
+                    ],
+                    billing: {
+                        city: "San Francisco",
+                        country: "US",
+                        state: "CA",
+                        street: "123 Main St",
+                        zipcode: "94105"
+                    }
+                })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.checkout_url) {
+                    DodoPayments.Initialize({
+                        mode: import.meta.env.MODE === "development" ? "test" : "live", 
+                        displayType: "overlay",
+                        onEvent: (event: any) => {
+                            console.log("Checkout event:", event);
+                        },
+                    });
+                    DodoPayments.Checkout.open({ checkoutUrl: data.checkout_url });
+                }
+            } else {
+                console.error("Error from checkout endpoint:", await response.text());
+            }
+        } catch (error) {
+            console.error("Failed to start checkout", error);
+        }
     };
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -149,6 +218,7 @@ const Home: React.FC = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
         localStorage.removeItem('currentProjectId');
+        localStorage.removeItem('isPremium');
         setIsLoggedIn(false);
         window.location.reload();
     };
@@ -158,20 +228,26 @@ const Home: React.FC = () => {
             <Sidebar />
 
             <main className="main-content">
-                <div className="top-bar">
-                    {isLoggedIn ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
-                            </div>
-                            <button className="btn btn-ghost" onClick={handleLogout}>Logout</button>
-                        </div>
-                    ) : (
-                        <>
-                            <button className="btn btn-ghost" onClick={() => openAuth('login')}>Sign In</button>
-                            <button className="btn btn-ghost" onClick={() => openAuth('signup')}>Get Started</button>
-                        </>
-                    )}
+                <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <div className="top-bar-left">
+                        <button className="btn btn-ghost" onClick={handleSubscriptionClick} style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', fontWeight: 'bold' }}>Subscriptions</button>
+                    </div>
+
+                    <div className="top-bar-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        {isLoggedIn ? (
+                            <>
+                                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
+                                </div>
+                                <button className="btn btn-ghost" onClick={handleLogout}>Logout</button>
+                            </>
+                        ) : (
+                            <>
+                                <button className="btn btn-ghost" onClick={() => openAuth('login')}>Sign In</button>
+                                <button className="btn btn-ghost" onClick={() => openAuth('signup')}>Get Started</button>
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 <div className="hero-section">
@@ -248,6 +324,11 @@ const Home: React.FC = () => {
                                         <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
                                     </svg>
                                 </span>
+                                {fw.isPremium && (
+                                    <span style={{marginLeft: 8, fontSize: '10px', backgroundColor: '#fbbf24', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold'}}>
+                                        PREMIUM
+                                    </span>
+                                )}
                             </div>
 
                             <p className="card-description">{fw.description}</p>
@@ -263,6 +344,12 @@ const Home: React.FC = () => {
                     ))}
                 </div>
             </main>
+
+            <PremiumOverlay
+                isOpen={isPremiumOverlayOpen}
+                onClose={() => setIsPremiumOverlayOpen(false)}
+                onSubscribe={handleSubscriptionClick}
+            />
 
             <CreateProjectModal
                 isOpen={isModalOpen}
