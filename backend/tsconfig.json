@@ -45,6 +45,7 @@
     "dist",
     "sandbox",
     "prisma.config.ts",
-    "src/generated/prisma"
+    "src/generated/prisma",
+    "src/templates"
   ]
 }
