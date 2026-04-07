@@ -1,124 +1,108 @@
+// ════════════════════════════════════════════════════════════
+// JWT AUTH MODULE — TypeScript
+// File: auth.ts  (split into routes/controller as you prefer)
+// ════════════════════════════════════════════════════════════
+
+// ─── 1. ENV VARIABLES (.env) ─────────────────────────────────
+// JWT_SECRET=your-super-secret-key
+// JWT_EXPIRES_IN=30d
+// PORT=3000
+
+// ─── 2. INSTALL ──────────────────────────────────────────────
+// npm install bcrypt jsonwebtoken express
+// npm install -D @types/bcrypt @types/jsonwebtoken @types/express
+
+// ─── 3. TYPES ────────────────────────────────────────────────
+import { Request, Response, Router } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-// ─── CONFIGURATION ──────────────────────────────────────────
-// Set your JWT secret via environment variable (recommended)
-// or replace the fallback string below.
-const JWT_SECRET: string = process.env.JWT_SECRET || 'your-secret-key';
-
-// ─── TYPES ──────────────────────────────────────────────────
-// Adapt this interface to match your actual User model / table.
-interface UserRecord {
-  id: string | number;
+export interface JwtPayload {
+  userId: string;
   username: string;
-  email: string;
-  password: string;          // hashed password
-  [key: string]: unknown;    // allow extra fields
 }
 
-// ─── DATABASE HELPERS ───────────────────────────────────────
-// Replace these placeholder functions with your own database
-// logic (Prisma, TypeORM, Drizzle, Mongoose, raw SQL, etc.).
-
-/**
- * Check whether a user with the given username or email already exists.
- * @returns true if taken, false otherwise
- */
-async function userExists(username: string, email: string): Promise<boolean> {
-  // TODO: Replace with your DB query
-  // Example (Prisma):
-  //   const user = await prisma.user.findFirst({
-  //     where: { OR: [{ username }, { email }] },
-  //   });
-  //   return !!user;
-  throw new Error('userExists() is not implemented. Replace this with your DB query.');
+export interface AuthBody {
+  username: string;
+  password: string;
 }
 
-/**
- * Create a new user record and return the created user.
- */
-async function createUser(
-  username: string,
-  email: string,
-  hashedPassword: string
-): Promise<UserRecord> {
-  // TODO: Replace with your DB insert
-  // Example (Prisma):
-  //   return prisma.user.create({
-  //     data: { username, email, password: hashedPassword },
-  //   });
-  throw new Error('createUser() is not implemented. Replace this with your DB insert.');
+// ─── 4. CONFIGURATION ────────────────────────────────────────
+const JWT_SECRET  = process.env.JWT_SECRET    || 'your-secret-key';
+const JWT_EXPIRES = process.env.JWT_EXPIRES_IN || '30d';
+
+// ─── 5. DB HELPERS — replace with your ORM ───────────────────
+// Mongoose:  return User.findOne({ username });
+// Prisma:    return prisma.user.findUnique({ where: { username } });
+// Sequelize: return User.findOne({ where: { username } });
+async function findUserByUsername(username: string): Promise<any | null> {
+  throw new Error('findUserByUsername() not implemented. Replace with your DB query.');
 }
 
-/**
- * Find a user by their email address.
- * @returns the user record or null
- */
-async function findUserByEmail(email: string): Promise<UserRecord | null> {
-  // TODO: Replace with your DB query
-  // Example (Prisma):
-  //   return prisma.user.findUnique({ where: { email } });
-  throw new Error('findUserByEmail() is not implemented. Replace this with your DB query.');
+// Mongoose:  return User.create(data);
+// Prisma:    return prisma.user.create({ data });
+// Sequelize: return User.create(data);
+async function createUser(data: { username: string; password: string }): Promise<any> {
+  throw new Error('createUser() not implemented. Replace with your DB insert.');
 }
 
-// ─── SIGNUP ─────────────────────────────────────────────────
-export const userSignupPost = async (req: any, res: any) => {
+// ─── 6. CONTROLLERS ──────────────────────────────────────────
+export const userSignupPost = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { username, email, password } = req.body;
-
-    if (!username || !email || !password) {
-      return res.status(400).json({ error: 'Username, email and password are required.' });
+    const { username, password } = req.body as AuthBody;
+    if (!username || !password) {
+      res.status(400).json({ error: 'Username and password are required.' }); return;
     }
-
-    const taken = await userExists(username, email);
-    if (taken) {
-      return res.status(400).json({ error: 'Username or email already exists.' });
+    const existing = await findUserByUsername(username);
+    if (existing) {
+      res.status(400).json({ error: 'Username already exists.' }); return;
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await createUser(username, email, hashedPassword);
-
-    const token = jwt.sign(
-      { userId: user.id, username: user.username, email: user.email },
-      JWT_SECRET,
-      { expiresIn: '30d' }
-    );
-
-    res.status(201).json({ message: 'User signup successful', token });
-  } catch (err: any) {
+    await createUser({ username, password: hashedPassword });
+    res.status(201).json({ message: 'User signup successful' });
+  } catch (err) {
     console.error('[Signup Error]', err);
     res.status(500).json({ error: 'Signup failed. Please try again.' });
   }
 };
 
-// ─── LOGIN ──────────────────────────────────────────────────
-export const userLoginPost = async (req: any, res: any) => {
+export const userLoginPost = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required.' });
+    const { username, password } = req.body as AuthBody;
+    if (!username || !password) {
+      res.status(400).json({ error: 'Username and password are required.' }); return;
     }
-
-    const user = await findUserByEmail(email);
+    const user = await findUserByUsername(username);
     if (!user) {
-      return res.status(400).json({ error: 'No account found with that email.' });
+      res.status(400).json({ error: 'User not found.' }); return;
     }
-
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) {
-      return res.status(401).json({ error: 'Incorrect password.' });
+      res.status(401).json({ error: 'Invalid credentials.' }); return;
     }
-
     const token = jwt.sign(
-      { userId: user.id, username: user.username, email: user.email },
+      { userId: user.id, username: user.username } as JwtPayload,
       JWT_SECRET,
-      { expiresIn: '30d' }
+      { expiresIn: JWT_EXPIRES }
     );
-
     res.status(200).json({ message: 'User login successful', token });
-  } catch (err: any) {
+  } catch (err) {
     console.error('[Login Error]', err);
     res.status(500).json({ error: 'Login failed. Please try again.' });
   }
 };
+
+// ─── 7. ROUTER ───────────────────────────────────────────────
+export const authRouter = Router();
+authRouter.post('/signup', userSignupPost);
+authRouter.post('/login',  userLoginPost);
+
+// ─── 8. MOUNT IN app.ts ──────────────────────────────────────
+// import express from 'express';
+// import { authRouter } from './auth';
+//
+// const app = express();
+// app.use(express.json());
+// app.use('/api/auth', authRouter);
+//
+// app.listen(process.env.PORT || 3000);

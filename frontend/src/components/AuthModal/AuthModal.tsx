@@ -56,6 +56,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
             if (res.data.user?.id) {
                 localStorage.setItem('userId', res.data.user.id);
             }
+            if (res.data.user?.isPremium !== undefined) {
+                localStorage.setItem('isPremium', String(res.data.user.isPremium));
+            }
             onClose();
             navigate('/');
         } catch (err: any) {
@@ -87,6 +90,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                 localStorage.setItem('token', token);
                 if (res.data.user?.id) {
                     localStorage.setItem('userId', res.data.user.id);
+                }
+                if (res.data.user?.isPremium !== undefined) {
+                    localStorage.setItem('isPremium', String(res.data.user.isPremium));
                 }
             }
             resetForm();

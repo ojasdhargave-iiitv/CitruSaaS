@@ -13,6 +13,7 @@ export interface Framework {
   description: string;
   installs: string;
   modules: Module[];
+  isPremium?: boolean;
 }
 
 export const frameworks: Framework[] = [
@@ -21,14 +22,16 @@ export const frameworks: Framework[] = [
     name: 'Python',
     description: 'Python is a high-level, interpreted, general-purpose programming language.',
     installs: '+ 34.8M',
-    modules: []
+    modules: [],
+    isPremium: true
   },
   {
     id: 'html',
     name: 'HTML, CSS, JS (Static)',
     description: 'The languages that make up the web. HTML provides the basic structure, CSS controls formatting, and JavaScript controls the...',
     installs: '+ 10.9M',
-    modules: []
+    modules: [],
+    isPremium: true
   },
   {
     id: 'node',
@@ -42,7 +45,7 @@ export const frameworks: Framework[] = [
       { id: 'websocket', name: 'WebSocket Setup', requiresFileType: true },
       { id: 'stripe', name: 'Stripe Payments Gateway Setup', requiresFileType: true },
       { id: 'mongodb', name: 'MongoDB Setup', requiresFileType: true },
-      { id: 'mysql', name: 'MySQL Setup', requiresFileType: true },
+      { id: 'postgre', name: 'PostgreSQL Setup', requiresFileType: true },
       { id: 'zod', name: 'ZOD Setup', requiresFileType: true },
     ]
   },
@@ -51,20 +54,23 @@ export const frameworks: Framework[] = [
     name: 'C++',
     description: 'C++ is a low-level and cross-platform imperative language. It has object-oriented, generic, and functional features.',
     installs: '+ 4.7M',
-    modules: []
+    modules: [],
+    isPremium: true
   },
   {
     id: 'java',
     name: 'Java',
     description: 'Java is a concurrent, class-based, statically typed object-oriented language.',
     installs: '+ 4.5M',
-    modules: []
+    modules: [],
+    isPremium: true
   },
   {
     id: 'c',
     name: 'C',
     description: 'C is a general-purpose computer programming language. It\'s used in operating systems, device drivers, and...',
     installs: '+ 4.3M',
-    modules: []
+    modules: [],
+    isPremium: true
   }
 ];

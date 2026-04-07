@@ -1,6 +1,6 @@
 import { Router } from "express";
 import usermiddleware from "../services/userMiddlerware.js";
-import { userSignupPost, userLoginPost } from "../controllers/userController.js";
+import { userSignupPost, userLoginPost, upgradePremium, downgradePremium } from "../controllers/userController.js";
 
 const router = Router();
 
@@ -15,5 +15,7 @@ router.get("/auth/verify", usermiddleware, (req: any, res: any) => {
     username: req.user.username
   });
 });
+router.put("/premium", upgradePremium);
+router.put("/premium/cancel", downgradePremium);
 
 export default router;
