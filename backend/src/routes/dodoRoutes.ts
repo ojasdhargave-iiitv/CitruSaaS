@@ -1,5 +1,6 @@
-import { Router } from 'express';
-import { checkoutHandler } from '@dodopayments/express';
+import { checkoutHandler, Webhooks } from '@dodopayments/express';
+import { prisma } from '../config/prisma.js';
+import express, { Router } from 'express';
 
 const router = Router();
 
@@ -16,6 +17,24 @@ router.post('/checkout', checkoutHandler({
     returnUrl: validateReturnUrl(process.env.DODO_PAYMENTS_RETURN_URL),
     environment: process.env.DODO_PAYMENTS_ENVIRONMENT as any,
     type: "session"
+}));
+
+router.post('/webhook', express.raw({ type: 'application/json' }), Webhooks({
+    webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_KEY as string,
+    onPaymentSucceeded: async (event: any) => {
+        const userId = event.data?.metadata?.userId;
+        if (userId) {
+            try {
+                await prisma.user.update({
+                    where: { id: userId },
+                    data: { isPremium: true }
+                });
+                console.log(`Successfully upgraded user ${userId} to premium via webhook.`);
+            } catch (error) {
+                console.error('Error upgrading user from webhook:', error);
+            }
+        }
+    }
 }));
 
 export default router;

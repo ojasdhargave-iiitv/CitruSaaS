@@ -113,26 +113,9 @@ const Home: React.FC = () => {
         // Check if returning from Dodo Payments checkout
         const queryParams = new URLSearchParams(window.location.search);
         if (queryParams.has('session_id') || queryParams.has('payment_id')) {
-            const upgradeUser = async () => {
-                const userId = localStorage.getItem('userId');
-                if (userId) {
-                    try {
-                        const response = await fetch(`${API_BASE_URL}/users/premium`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ userId })
-                        });
-                        if (response.ok) {
-                            localStorage.setItem('isPremium', 'true');
-                        }
-                    } catch (e) {
-                        console.error('Failed to upgrade user', e);
-                    }
-                }
-                // Clear URL params
-                window.history.replaceState({}, document.title, "/");
-            };
-            upgradeUser();
+            // Webhook handler in the backend will automatically upgrade the user asynchronously.
+            // Just clear the URL params for a clean UI.
+            window.history.replaceState({}, document.title, "/");
         }
     }, []);
 
@@ -186,6 +169,9 @@ const Home: React.FC = () => {
                         state: "CA",
                         street: "123 Main St",
                         zipcode: "94105"
+                    },
+                    customer: {
+                        identifier: localStorage.getItem('userId') || 'guest'
                     }
                 })
             });

@@ -20,6 +20,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['*']
 }));
+app.use('/api/dodo', dodoRoutes);
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -38,7 +39,7 @@ app.use("/api", generateRoutes);
 app.use("/api", fileRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", projectRoutes);
-app.use("/api/dodo", dodoRoutes);
+
 app.use("/auth", oauthRoutes);
 
 export default app;
